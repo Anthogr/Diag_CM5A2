@@ -6,22 +6,19 @@ Created on Mon Oct 11 14:34:22 2021
 
 @author: anthog
 
-- Generates basic plots for CMA5A2 and create a plot gathering them if 
-  create_pdf = 'y'
+This script plots several diagnostics from CMA5A2 outputs.
+Depending on the options enabled:
 
-- In order to run, this script will need the 'util' and 'Toolz' folders 
-  containing all the necessary functions and templates
+    - Figures can be saved (format can be set as well)
+    - PDF file gathering the generated figures can be created
+    - Manual value limits for plots colormap can be activated instead of the 
+      automatic scaling for convenient comparison between several simulations
 
-- To run the script, set the following variables  in the
-  'PARAMETERS TO DEFINE' section:
+To run the script, jump to the 'PARAMETERS TO DEFINE' section right below after 
+the 'LIBRARIES TO LOAD' section and change the variables according to your needs
 
-                         - dataDirPath
-                         - savedFigPath
-                         - savedPdfPath
-                         - filePrefix
-                         - maskFile
-                         - bathyFile
-                         - subBasinFile
+Note: In order to run, this script will need the 'util' and 'Toolz' 
+      folders containing all the necessary functions and templates
 -------------------------------------------------------------------------------
 """
 
