@@ -7,9 +7,5 @@ The scripts and functions have been reworked to match the CMA5A2 model's outputs
 ## Usage
 
 Locally:
-- Set variables in __PARAMETERS TO DEFINE__ section in `Basic_diag.CMA5A2.py`
-(More informations at the top of the script) 
-
-Remote (Irene):
-- Set variables in __PARAMETERS TO DEFINE__ section in `Basic_diag.CMA5A2.py`
+- Set variables in __PARAMETERS TO DEFINE__ section in `Diag_CMA5A2.py`
 (More informations at the top of the script) 
