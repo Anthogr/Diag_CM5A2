@@ -13,4 +13,3 @@ Locally:
 Remote (Irene):
 - Set variables in __PARAMETERS TO DEFINE__ section in `Basic_diag.CMA5A2.py`
 (More informations at the top of the script) 
-- Run `sh RUN_DIAG.sh`
