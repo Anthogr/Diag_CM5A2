@@ -35,14 +35,13 @@ import cartopy.crs as ccrs
 import warnings
 from matplotlib.colors import BoundaryNorm
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
-import math # ADDED
+import math
 import xarray as xr
 from matplotlib.axes import Axes
 from cartopy.mpl.geoaxes import GeoAxes
 GeoAxes._pcolormesh_patched = Axes.pcolormesh
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
-from netCDF4 import Dataset
 
 # Loading custom functions 
 from Toolz import (z_masked_overlap, readncfile, dopdf, dispGridCoastline,
