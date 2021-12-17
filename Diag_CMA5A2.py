@@ -25,13 +25,13 @@ Note: In order to run, this script will need the 'util' and 'Toolz'
 #%%===========================================================================#
 #                         --< LIBRARIES TO LOAD >--                           #
 #=============================================================================#
+import os
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from netCDF4 import Dataset
 import numpy as np
 import cartopy.crs as ccrs
-import os
 import warnings
 from matplotlib.colors import BoundaryNorm
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
