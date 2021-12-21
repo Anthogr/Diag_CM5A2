@@ -43,7 +43,6 @@ def plotMapping(lon, lat, var2plot, contourLines, cbar_title, land_mask,
     dispGridCoastline(lon, lat, inProjData, land_mask[0,:,:], 1.25)
     
     # Display colorbar
-  
     if cbar_title is not None:
         cbar = plt.colorbar(map1, orientation='horizontal', extend='both')
         cbar.ax.set_title(cbar_title,size=cbar_label_size)
@@ -51,12 +50,12 @@ def plotMapping(lon, lat, var2plot, contourLines, cbar_title, land_mask,
 
     plt.title(figTitle,fontsize=title_font_size)
        
-    if norm is not None and len(np.unique(np.diff(norm.boundaries))) != 1:
+    if norm is not None and len(np.unique(np.round(np.diff(norm.boundaries),2))) != 1:
         plt.text(0.5,-0.15,'Warning: Adaptative colormap (non-linear) !',horizontalalignment='center',
                  verticalalignment='center', transform = ax.transAxes, fontsize=16, color='r', weight='bold')    
     
     
-def plotZonalAve(lat, depth, var2plot, contourLines, cbar_title,  cmap, norm, figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size, xy_label_font_size, xy_ticks_font_size):
+def plotZonalAve(lat, depth, var2plot, contourLines, cbar_title,  cmap, norm, figTitle, figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size, xy_label_font_size, xy_ticks_font_size):
    
     import numpy as np
     import matplotlib.pyplot as plt 
@@ -77,7 +76,7 @@ def plotZonalAve(lat, depth, var2plot, contourLines, cbar_title,  cmap, norm, fi
     cbar = plt.colorbar(map1,orientation='horizontal', extend='both')         
     
     # Titles/Labels and size
-    plt.title ('Yearly average' , fontsize = title_font_size)
+    plt.title (figTitle , fontsize = title_font_size)
     plt.xlabel('Latitude (°N)'  , fontsize = xy_label_font_size)
     plt.ylabel('Depth (m)'      , fontsize = xy_label_font_size)
     plt.xticks(fontsize = xy_ticks_font_size)
@@ -85,7 +84,7 @@ def plotZonalAve(lat, depth, var2plot, contourLines, cbar_title,  cmap, norm, fi
     cbar.ax.set_title(cbar_title , size = cbar_label_size)
     cbar.ax.tick_params(labelsize = cbar_tick_size)
     
-    if norm is not None and len(np.unique(np.diff(norm.boundaries))) != 1:
+    if norm is not None and len(np.unique(np.round(np.diff(norm.boundaries),2))) != 1:
         plt.text(0.5,-0.15,'Warning: Adaptative colormap (non-linear) !',horizontalalignment='center',
                   verticalalignment='center', transform = ax.transAxes, fontsize=16, color='r', weight='bold')   
     
@@ -146,7 +145,7 @@ def plotMappingZoom(lon, lat, var2plot, contourLines, cbar_title, lonLim, latLim
     
     plt.title(figTitle,fontsize=title_font_size)
     
-    if norm is not None and len(np.unique(np.diff(norm.boundaries))) != 1:
+    if norm is not None and len(np.unique(np.round(np.diff(norm.boundaries),2))) != 1:
         plt.text(0.5,-0.1,'Warning: Adaptative colormap (non-linear) !',horizontalalignment='center',
                  verticalalignment='center', transform = ax.transAxes, fontsize=16, color='r', weight='bold') 
         
@@ -205,7 +204,7 @@ def plotMappingLev(lon, lat, var2plot, cbar_title, depth, land_mask, inProjData,
     
         # Compute coastline
         # dispGridCoastline(lon, lat, data_crs,                   
-        #                     land_mask, 1.25)
+        #                  land_mask, 1.25)
         
         plt.title(f'{"{:.0f}".format(depth[k*2])} m')
         

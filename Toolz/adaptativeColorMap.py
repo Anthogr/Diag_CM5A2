@@ -71,7 +71,7 @@ def adaptativeColorMap(var, p1, p2, cmapColor):
                 lvl=np.append(lvl,np.linspace(bins[i],bins[i+1],20))[0:-1] # 20 or 40
         
         
-        bounds = np.round(lvl,1)
+        bounds = np.round(lvl,3)
         
         # diverging colormap
         # if (bounds.min() < 0) & (bounds.max() > 0):
@@ -84,8 +84,11 @@ def adaptativeColorMap(var, p1, p2, cmapColor):
         norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
         
     else:
-        
-        cmap = cmapColor
-        norm = None
+        # cmap = cmapColor
+        # norm = None
+
+        cmap = plt.get_cmap(cmapColor,100)
+        bounds = np.linspace(var.min(),var.max(),100)
+        norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
             
     return cmap, norm
