@@ -61,31 +61,6 @@ subBasinFile = "subbasins_rupelianTot.nc"
 dataDirPath  = '/Users/anthony/Documents/Model/Data_CMA5A2/' 
 #---------------------------------------------------#
 
-# Figures
-#---------------------------------------------------#
-create_fig   = 'y' # 'y' or 'n'
-savedFigPath = '/Users/anthony/Documents/Model/Diag_CMA5A2/FIG/'
-fig_format   = 'png' # 'png' or 'pdf' ...
-                     # Format of saved figures. Choosing 'pdf' will 
-                     # allow to vectorize the figures and thus to get a 
-                     # better quality at the expense of the size.
-#---------------------------------------------------#
-
-# PDF
-#---------------------------------------------------#
-create_pdf      = 'y' # 'y' or 'n'
-savedPdfPath    = '/Users/anthony/Documents/Model/Diag_CMA5A2/PDF/'
-sentence_to_use = ('') # if create_pdf='y' write here a note you want to 
-                       # appear at the beginning of the pdf
-#---------------------------------------------------#
-
-# GIF
-#---------------------------------------------------#
-create_gif   = 'y' # 'y' or 'n'
-savedGifPath = '/Users/anthony/Documents/Model/Diag_CMA5A2/GIF/'
-timeInterv   = 500 # time in ms between each frame of the gif file
-#---------------------------------------------------#
-
 # Manual or automatic colormap limits 
 # 'y' for manual, 'n' for automatic
 #---------------------------------------------------#
@@ -106,6 +81,70 @@ manual_lim_no3     = 'n'; min_lim_no3     = 0; max_lim_no3     = 100; step_no3  
 manual_lim_zono3   = 'n'; min_lim_zono3   = 0; max_lim_zono3   = 100; step_zono3   = 1
 manual_lim_o2      = 'n'; min_lim_o2      = 0; max_lim_o2      = 100; step_o2      = 1
 manual_lim_zoo2    = 'n'; min_lim_zoo2    = 0; max_lim_zoo2    = 100; step_zoo2    = 1
+#---------------------------------------------------#
+
+#%%===========================================================================#
+#                             --< INPUT prompt >--                            #
+#=============================================================================#
+# Section that will prompt to user to choose to create figures/pdf/gif
+
+# Figures
+#---------------------------------------------------#
+promptFig  = f"Create figures? (y/n)\n"
+create_fig = input(promptFig)
+while create_fig != 'y' and create_fig != 'n':
+    print('/!\\ Answer not valid /!\\')
+    create_fig = input(promptFig)
+
+if create_fig == 'y':
+    savedFigPath = os.getcwd() + '/FIG/' # get path name
+    if os.system('[ ! -d "' + savedFigPath + '" ]') == 0: # folder doesn't exist, create one
+        os.system('mkdir ' + savedFigPath)
+
+    promptFig2 = f"Figures format? (png/pdf)\n"
+    fig_format = input(promptFig2)
+    while fig_format != 'png' and create_fig != 'pdf':
+        print('/!\\ Answer not valid /!\\')
+        fig_format = input(promptFig2)
+#---------------------------------------------------#
+
+# PDF
+#---------------------------------------------------#
+promptPdf  = f"Create pdf? (y/n)\n"
+create_pdf = input(promptPdf)
+while create_pdf != 'y' and create_pdf != 'n':
+    print('/!\\ Answer not valid /!\\')
+    create_pdf = input(promptPdf)
+
+if create_pdf == 'y':
+    savedPdfPath = os.getcwd() + '/PDF/' # get path name
+    if os.system('[ ! -d "' + savedPdfPath + '" ]') == 0: # folder doesn't exist, create one
+        os.system('mkdir ' + savedPdfPath)
+
+    promptPdf2 = f"Notes to write in pdf?\n"
+    sentence_to_use = input(promptPdf2)
+#---------------------------------------------------#
+
+# GIF
+#---------------------------------------------------#
+promptGif  = f"Create gif? (y/n)\n"
+create_gif = input(promptGif)
+while create_gif != 'y' and create_gif != 'n':
+    print('/!\\ Answer not valid /!\\')
+    create_gif = input(promptGif)
+
+if create_gif == 'y':
+    savedGifPath = os.getcwd() + '/GIF/' # get path name
+    if os.system('[ ! -d "' + savedGifPath + '" ]') == 0: # folder doesn't exist, create one
+        os.system('mkdir ' + savedGifPath)
+
+    promptGif2 = f"Time in ms between each frame of the gif file? (Integer)\n"
+    timeInterv = input(promptGif2)
+    while timeInterv.isdigit() is False:
+        print('/!\\ Answer not valid /!\\')
+        timeInterv = input(promptGif2)
+
+    timeInterv = int(timeInterv)
 #---------------------------------------------------#
 
 #%%===========================================================================#
@@ -955,16 +994,6 @@ if "O2" in globals():
 #%%===========================================================================#
 #                              --< PLOTTING >--                               #
 #=============================================================================#
-
-# If create_[fig/gif] = 'y' and saved[Fig/Gif]Path don't exist, then create them
-#----------------------------------#
-if create_fig == 'y' and os.system('[ ! -d "' + savedFigPath + '" ]') == 0:
-   os.system('mkdir ' + savedFigPath)
-
-if create_gif == 'y' and os.system('[ ! -d "' + savedGifPath + '" ]') == 0:
-   os.system('mkdir ' + savedGifPath)
-#----------------------------------#
-
 # Initialization variables
 #----------------------------------#
 filecount  = 0
@@ -1230,7 +1259,7 @@ if "SST" in globals():
 
             plt.close()
 
-    makeGif(savedGifPath, "SST.gif", timeInterv)
+        makeGif(savedGifPath, "SST.gif", timeInterv)
     #-------------------#
 #-----------------------------------------------------------------------------#
 
@@ -1442,7 +1471,7 @@ if "baro_stream_function" in globals():
 
             plt.close()
 
-    makeGif(savedGifPath, "baro_stream_function.gif", timeInterv)
+        makeGif(savedGifPath, "baro_stream_function.gif", timeInterv)
     #-------------------#
 #-----------------------------------------------------------------------------#    
 
@@ -1524,7 +1553,7 @@ if "TPP" in globals():
 
             plt.close()
 
-    makeGif(savedGifPath, "INTPP.gif", timeInterv)
+        makeGif(savedGifPath, "INTPP.gif", timeInterv)
     #-------------------#
 #-----------------------------------------------------------------------------#
 
@@ -1564,7 +1593,7 @@ if "EPC100" in globals():
 
             plt.close()
 
-    makeGif(savedGifPath, "EPC100.gif", timeInterv)
+        makeGif(savedGifPath, "EPC100.gif", timeInterv)
     #-------------------#
 #-----------------------------------------------------------------------------#
 
@@ -1881,12 +1910,6 @@ if "O2" in globals():
 #=============================================================================#
 
 if create_pdf == 'y':
-    
-    # If savedPdfPath folder doesn't exist, then create one
-    #----------------------------------#
-    if os.system('[ ! -d "' + savedPdfPath + '" ]') == 0:
-       os.system('mkdir ' + savedPdfPath)
-    #----------------------------------#
     
     dopdf(savedPdfPath, savedfiles, 'file', filecount, filePrefix, sentence_to_use)
 
