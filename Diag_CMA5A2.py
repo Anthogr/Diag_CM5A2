@@ -16,7 +16,11 @@ Depending on the options enabled:
       automatic scaling for convenient comparison between several simulations
 
 To run the script, jump to the 'PARAMETERS TO DEFINE' section right below after 
-the 'LIBRARIES TO LOAD' section and change the variables according to your needs
+the 'LIBRARIES TO LOAD' section and change the variables according to your needs.
+
+Then launch the script, you'll get through several input questions related to
+the FIG/PDF/GIF settings. After this step, the script will run following your 
+choices.
 
 Note: In order to run, this script will need the 'util' and 'Toolz' 
       folders containing all the necessary functions and templates
