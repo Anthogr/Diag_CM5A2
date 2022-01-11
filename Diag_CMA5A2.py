@@ -103,7 +103,7 @@ Profile {profileName} has been created\n
    {profilePath}/{profileName}_profile.py
 2) Relaunch the script
 3) When prompted for the profile name, re-enter {profileName} so the script
-   will run by using the newly edited {profileName}_profile.py file
+   will run using the newly edited {profileName}_profile.py file
 -------------------------------------
 ===================================================================
 """
@@ -2211,15 +2211,14 @@ for ind_file in np.arange(0,length_loop):
             if "temp" in globals():
                 zo_temp_S1 = zo_temp
                 del temp
+            
+            if "zo_temp" in globals():
                 del zo_temp, zo_temp_mean
 
             if "zo_temp_atlmsk" in globals() and "zo_temp_pacmsk" in globals() and "zo_temp_indmsk" in globals():
                 del zo_temp_atlmsk, zo_temp_atlmsk_mean
                 del zo_temp_pacmsk, zo_temp_pacmsk_mean
                 del zo_temp_indmsk, zo_temp_indmsk_mean
-
-            if "zo_temp" in globals():
-                del zo_temp
 
             if "zo_stream_function" in globals():
                 zo_stream_function_S1 = zo_stream_function
@@ -2394,5 +2393,4 @@ for ind_file in np.arange(0,length_loop):
             if "O2" in globals():
                 del O2, O2_mean
    
-
 # %%
