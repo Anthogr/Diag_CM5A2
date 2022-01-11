@@ -40,7 +40,7 @@ def plotMapping(lon, lat, var2plot, contourLines, cbar_title, land_mask,
         ax.clabel(cont1, fmt=' {:.1f} '.format, fontsize='x-large')  
     
     # Compute coastline
-    dispGridCoastline(lon, lat, inProjData, land_mask[0,:,:], 1.25)
+    #dispGridCoastline(lon, lat, inProjData, land_mask[0,:,:], 1.25)
     
     # Display colorbar
     if cbar_title is not None:

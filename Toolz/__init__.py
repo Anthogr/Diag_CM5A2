@@ -9,3 +9,4 @@ from .myCustomPlots import plotMappingZoom
 from .myCustomPlots import plotMappingLev
 from .adaptativeColorMap import adaptativeColorMap
 from .makeGif import makeGif
+from .myCustomInterp3 import myCustomInterp3
