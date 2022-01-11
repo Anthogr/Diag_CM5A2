@@ -17,19 +17,26 @@ Depending on the options enabled:
     - In the case where 2 experiments are chosen, there is the ability to 
       compute the difference between them
 
-To run the script, jump to the 'PARAMETERS TO DEFINE' section right below after 
-the 'LIBRARIES TO LOAD' section and change the variables according to your needs.
+- Launch the script by running the RUN_DIAG.sh file (command 'sh RUN_DIAG.sh')
 
-Note that the variables in [ProfileName]_profile.py file: 
+- Enter your [ProfileName] as requested
+    - if [ProfileName] is not known: a folder [ProfileName] located in userData/
+      containing a [ProfileName]_profile.py will be created and program will stop.
+      At this point, you will need to edit the [ProfileName]_profile.py file 
+      according to your needs and relaunch the program
+    - if [ProfileName] is known: program will run following the settings of the
+      userData/[ProfileName]/[ProfileName]_profile.py file
+
+    Note that the variables in [ProfileName]_profile.py file: 
         - filePrefix
         - maskFile
         - bathyFile
         - subBasinFile
         - dataDirPath
-are in list format and can contain as many elements as you want (elements 
-being the different properties of the experiments: file names, path...)
-In the specific case where you choose 2 experiments, a new prompt will appear 
-letting you choose the ability to compute differences between simu 1 & 2.
+    are in list format and can contain as many elements as you want (elements 
+    being the different properties of the experiments: file names, path...)
+    In the specific case where you choose 2 experiments, a new prompt will appear 
+    letting you choose the ability to compute differences between simu 1 & 2.
 
 Note: In order to run, this script will need the 'util' and 'Toolz' 
       folders containing all the necessary functions and templates
@@ -56,6 +63,9 @@ from cartopy.mpl.geoaxes import GeoAxes
 GeoAxes._pcolormesh_patched = Axes.pcolormesh
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
+from shutil import copyfile
+import sys
+import importlib
 
 # Loading custom functions 
 from Toolz import (z_masked_overlap, readncfile, dopdf, dispGridCoastline,
@@ -63,82 +73,81 @@ from Toolz import (z_masked_overlap, readncfile, dopdf, dispGridCoastline,
                    adaptativeColorMap, makeGif, myCustomInterp3)
 
 #%%===========================================================================#
-#                         --< PARAMETERS TO DEFINE >--                        #
+#          --< PROFILE INITIALIZATION AND LOADING INIT VARIABLES>--           #
 #=============================================================================#
-# files you want to be loaded and their path location
-#---------------------------------------------------#
-filePrefix   = ["C30MaTotV1-3X_SE_4805_4854_1M", 
-                "NORIVER-00_SE_2000_2009_1M"] # [filePrefix]_grid_[X].nc with [X] = T, U, V or W
-maskFile     = ["C30MaTMP_mesh_mask.nc", 
-                "NORIVER-00_mesh_mask.nc"]
-bathyFile    = ["bathyORCA2.RupelianTotalV1.nc", 
-                ""]
-subBasinFile = ["subbasins_rupelianTot.nc", 
-                ""]
-dataDirPath  = ["/Users/anthony/Documents/Model/Data_CMA5A2/",
-                "/Users/anthony/Documents/Model/Data_CMA5A2/CTRL/"]
-#---------------------------------------------------#
+# Initialization part that will ask for a profile name. 
+#   - If this names hasn't been used yet, the script will create a folder 
+#     containing all the user related data i.e:
+#       * userName_profile.py containing the initialization variables
+#       * Folders FIG/PDF/GIF that will contain the script outputs
+#     Those are created in userData/UserName folder
+#
+#   - If profile name entered already exists, the script will use the related 
+#     userName_profile.py file and run the script
 
-#---------------------------------------------------#
-fig_format = 'png'
+print('\n\n\n==========================< Diag_CMA5A2 >==========================')
 
-create_pdf = 'y'
-sentence_to_use = ["",""]
+# Initialization
+#------------------------------------------------------#
+# Ask for profile name
+promptProfile = f"""Enter your profile name:
+(This is a simple identifier that will allow to save your settings to run the script)\n"""
+profileName   = input(promptProfile)
 
-create_gif = 'n'
-timeInterv = 250
-#---------------------------------------------------#
+# Extract path name that will contain all the user related data
+profilePath = os.getcwd() + '/userData/' + profileName
 
-#------------------------------------#
-# filePrefix   = "NORIVER-00_SE_2000_2009_1M" # [filePrefix]_grid_[X].nc with [X] = T, U, V or W
-# maskFile     = "NORIVER-00_mesh_mask.nc"
-# bathyFile    = "bathyORCA2.RupelianTotalV1.nc"
-# subBasinFile = "subbasins_rupelianTot.nc"
-# dataDirPath  = '/Users/anthony/Documents/Model/Data_CMA5A2/CTRL/' 
-#------------------------------------#
+str_created_profile = f"""\n-------------------------------------
+Profile {profileName} has been created\n
+1) You should now edit
+   {profilePath}/{profileName}_profile.py
+2) Relaunch the script
+3) When prompted for the profile name, re-enter {profileName} so the script
+   will run by using the newly edited {profileName}_profile.py file
+-------------------------------------
+===================================================================
+"""
 
+# Check if profileName folder exists, if not create one
+if os.system('[ ! -d "' + profilePath + '" ]') == 0:
+    promptProfile2 = f"\nProfile {profileName} doesn't exist, do you want to create it? (y/n)\n" 
+    create_profile  = input(promptProfile2)
 
-# Manual or automatic colormap limits 
-# 'y' for manual, 'n' for automatic
-#---------------------------------------------------#
-manual_lim_bathy   = 'n'; min_lim_bathy   = 0; max_lim_bathy   = 100; step_bathy   = 1
-manual_lim_sss     = 'n'; min_lim_sss     = 0; max_lim_sss     = 100; step_sss     = 1
-manual_lim_zosalin = 'n'; min_lim_zosalin = 0; max_lim_zosalin = 100; step_zosalin = 1
-manual_lim_sst     = 'n'; min_lim_sst     = 0; max_lim_sst     = 100; step_sst     = 1
-manual_lim_zotemp  = 'n'; min_lim_zotemp  = 0; max_lim_zotemp  = 100; step_zotemp  = 1
-manual_lim_zostrf  = 'n'; min_lim_zostrf  = 0; max_lim_zostrf  = 100; step_zostrf  = 1
-manual_lim_bstrf   = 'n'; min_lim_bstrf   = 0; max_lim_bstrf   = 100; step_bstrf   = 1
-manual_lim_omlnh   = 'n'; min_lim_omlnh   = 0; max_lim_omlnh   = 100; step_omlnh   = 1
-manual_lim_omlsh   = 'n'; min_lim_omlsh   = 0; max_lim_omlsh   = 100; step_omlsh   = 1
-manual_lim_intpp   = 'n'; min_lim_intpp   = 0; max_lim_intpp   = 100; step_intpp   = 1
-manual_lim_epc100  = 'n'; min_lim_epc100  = 0; max_lim_epc100  = 100; step_epc100  = 1
-manual_lim_po4     = 'n'; min_lim_po4     = 0; max_lim_po4     = 100; step_po4     = 1
-manual_lim_zopo4   = 'n'; min_lim_zopo4   = 0; max_lim_zopo4   = 100; step_zopo4   = 1
-manual_lim_no3     = 'n'; min_lim_no3     = 0; max_lim_no3     = 100; step_no3     = 1
-manual_lim_zono3   = 'n'; min_lim_zono3   = 0; max_lim_zono3   = 100; step_zono3   = 1
-manual_lim_o2      = 'n'; min_lim_o2      = 0; max_lim_o2      = 100; step_o2      = 1
-manual_lim_zoo2    = 'n'; min_lim_zoo2    = 0; max_lim_zoo2    = 100; step_zoo2    = 1
-#---------------------------------------------------#
+    if create_profile == 'y':
+        os.system('mkdir ' + profilePath)
+        copyfile('defaultProfile.py', f'userData/{profileName}/{profileName}_profile.py') 
+        sys.exit(str_created_profile)
+    elif create_profile == 'n':
+        sys.exit('\nProgram ended\n===================================================================')
 
-#%%===========================================================================#
-#                    --< INITIALIZATION & DIFF SETTINGS >--                   #
-#=============================================================================#
+# And if folder and profileName_profile.py exist: load variables in profileName_profile.py
+elif os.system('[ -f "' + profilePath + f'/{profileName}_profile.py' + '" ]') == 0:
+    varModule = importlib.import_module(f'userData.{profileName}.{profileName}_profile')
+    for varname, val in varModule.__dict__.items():
+        if (varname.startswith('__') and varname.endswith('__'))==False : # get the negation of the expression between parentethis
+            exec(varname + " = varModule." + varname)
+    print(f'\n-------------------------------------\nVariables in {profileName}_profile.py loaded\n-------------------------------------')
+
+else:
+     sys.exit(f'/!\ Warning, {profilePath}/{profileName}_profile.py doesn''t exist')
+#------------------------------------------------------#
+
 # Create folders for figures / PDF / GIF if specidfied 
 #------------------------------------------------------#
 # Figures
-savedFigPath = os.getcwd() + '/FIG/' # get path name
+savedFigPath = profilePath + '/FIG/' # get path name
 if os.system('[ ! -d "' + savedFigPath + '" ]') == 0: # folder doesn't exist, create one
     os.system('mkdir ' + savedFigPath)
 
 # PDF
 if create_pdf == 'y':
-    savedPdfPath = os.getcwd() + '/PDF/' # get path name
+    savedPdfPath = profilePath + '/PDF/' # get path name
     if os.system('[ ! -d "' + savedPdfPath + '" ]') == 0: # folder doesn't exist, create one
         os.system('mkdir ' + savedPdfPath)
 
 # GIF
 if create_gif == 'y':
-    savedGifPath = os.getcwd() + '/GIF/' # get path name
+    savedGifPath = profilePath + '/GIF/' # get path name
     if os.system('[ ! -d "' + savedGifPath + '" ]') == 0: # folder doesn't exist, create one
         os.system('mkdir ' + savedGifPath)
 #------------------------------------------------------#
@@ -243,17 +252,17 @@ for ind_file in np.arange(0,length_loop):
 
         # File names
         #----------------------------------#
-        nc_file_mask     = dataDirPath[ind_file] + maskFile[ind_file]
-        nc_file_bathy    = dataDirPath[ind_file] + bathyFile[ind_file]
-        nc_file_subbasin = dataDirPath[ind_file] + subBasinFile[ind_file]
-        nc_file_T        = dataDirPath[ind_file] + filePrefix[ind_file] + "_grid_T.nc"
-        nc_file_U        = dataDirPath[ind_file] + filePrefix[ind_file] + "_grid_U.nc"
-        nc_file_V        = dataDirPath[ind_file] + filePrefix[ind_file] + "_grid_V.nc"
-        nc_file_W        = dataDirPath[ind_file] + filePrefix[ind_file] + "_grid_W.nc"
-        nc_file_diaptr   = dataDirPath[ind_file] + filePrefix[ind_file] + "_diaptr.nc"
-        nc_file_diad_T   = dataDirPath[ind_file] + filePrefix[ind_file] + "_diad_T.nc"
-        nc_file_ptrc_T   = dataDirPath[ind_file] + filePrefix[ind_file] + "_ptrc_T.nc"
-        nc_file_histmth  = dataDirPath[ind_file] + filePrefix[ind_file] + "_histmth.nc"
+        nc_file_mask     = dataDirMask[ind_file]  + maskFile[ind_file]
+        nc_file_bathy    = dataDirBathy[ind_file]  + bathyFile[ind_file]
+        nc_file_subbasin = dataDirBathy[ind_file]  + subBasinFile[ind_file]
+        nc_file_T        = dataDirOutput[ind_file] + "OCE/Analyse/SE/" + filePrefix[ind_file] + "_grid_T.nc"
+        nc_file_U        = dataDirOutput[ind_file] + "OCE/Analyse/SE/" + filePrefix[ind_file] + "_grid_U.nc"
+        nc_file_V        = dataDirOutput[ind_file] + "OCE/Analyse/SE/" + filePrefix[ind_file] + "_grid_V.nc"
+        nc_file_W        = dataDirOutput[ind_file] + "OCE/Analyse/SE/" + filePrefix[ind_file] + "_grid_W.nc"
+        nc_file_diaptr   = dataDirOutput[ind_file] + "OCE/Analyse/SE/" + filePrefix[ind_file] + "_diaptr.nc"
+        nc_file_diad_T   = dataDirOutput[ind_file] + "MBG/Analyse/SE/" + filePrefix[ind_file] + "_diad_T.nc"
+        nc_file_ptrc_T   = dataDirOutput[ind_file] + "MBG/Analyse/SE/" + filePrefix[ind_file] + "_ptrc_T.nc"
+        nc_file_histmth  = dataDirOutput[ind_file] + "ATM/Analyse/SE/" + filePrefix[ind_file] + "_histmth.nc"
         #----------------------------------#
 
         # Load variables in DATA var (check if file exist before loading)
@@ -387,13 +396,12 @@ for ind_file in np.arange(0,length_loop):
         if "SST" in globals():
 
             SST_mean = np.mean(SST,axis=0)  # Yearly average
-            
+        
         if "zo_temp" in globals():
             
-             zo_temp      = np.squeeze(zo_temp)
-             zo_temp      = np.ma.masked_where(zo_temp==0, zo_temp) # replace 0 by masked values
-             zo_temp_mean = np.mean(zo_temp,axis=0) # Yearly average
-             # zo_temp_mean = np.ma.masked_where(zo_temp_mean==0, zo_temp_mean) # replace 0 by masked values
+            zo_temp      = np.squeeze(zo_temp)
+            zo_temp      = np.ma.masked_where(zo_temp==0, zo_temp) # replace 0 by masked values
+            zo_temp_mean = np.mean(zo_temp,axis=0) # Yearly average
         #----------------------------------#
 
         # Zonal stream function
@@ -520,14 +528,14 @@ for ind_file in np.arange(0,length_loop):
                         zo_salinity_atlmsk[:,:,j] = np.ma.mean(salinity[:,:,ind[0],ind[1]] * atlmsk[ind[0],ind[1]], axis=2)
                         zo_salinity_pacmsk[:,:,j] = np.ma.mean(salinity[:,:,ind[0],ind[1]] * pacmsk[ind[0],ind[1]], axis=2)
                         zo_salinity_indmsk[:,:,j] = np.ma.mean(salinity[:,:,ind[0],ind[1]] * indmsk[ind[0],ind[1]], axis=2)
-                        
+
                 if "temp" in globals():
                     zo_temp2[:,:,j]        = np.ma.mean(temp[:,:,ind[0],ind[1]], axis=2)
                     if "subbasin_mask" in globals():
                         zo_temp_atlmsk[:,:,j]  = np.ma.mean(temp[:,:,ind[0],ind[1]] * atlmsk[ind[0],ind[1]], axis=2)
                         zo_temp_pacmsk[:,:,j]  = np.ma.mean(temp[:,:,ind[0],ind[1]] * pacmsk[ind[0],ind[1]], axis=2)
                         zo_temp_indmsk[:,:,j]  = np.ma.mean(temp[:,:,ind[0],ind[1]] * indmsk[ind[0],ind[1]], axis=2)
-
+                
                 if "PO4" in globals():
                     zo_PO4[:,:,j]        = np.ma.mean(PO4[:,:,ind[0],ind[1]], axis=2)
                     if "subbasin_mask" in globals():
@@ -558,7 +566,7 @@ for ind_file in np.arange(0,length_loop):
                     zo_salinity_atlmsk_mean = np.mean(zo_salinity_atlmsk, axis=0)
                     zo_salinity_pacmsk_mean = np.mean(zo_salinity_pacmsk, axis=0)
                     zo_salinity_indmsk_mean = np.mean(zo_salinity_indmsk, axis=0)
-                    
+
             if "temp" in globals():
                 zo_temp2_mean       = np.mean(zo_temp2, axis=0)
                 if "subbasin_mask" in globals():
@@ -625,7 +633,7 @@ for ind_file in np.arange(0,length_loop):
     #%%===========================================================================#
     #                           --< PLOT PARAMETERS >--                           #
     #=============================================================================#
-                  
+
     # Common parmeters
     #----------------------------------#
     # Map projection for plots
@@ -658,25 +666,25 @@ for ind_file in np.arange(0,length_loop):
 
     # Contour lines
     nbContourLines = 8 # nb of contour lines plotted
-    #----------------------------------#     
-        
+    #----------------------------------#
+
     if ((ind_file == 0 or ind_file == 1) and create_pdf_diff =='y') or create_pdf_diff =='n':
         # Plot parameters for standard simu (not diff)
         #-----------------------------------------------------------------------------#
         # SUBBASINS
         #----------------------------------#
-        from palettable.cartocolors.qualitative import Safe_3 # colormap import
-        cmapColor_subbasin = Safe_3.mpl_colormap
-        # cmapColor_subbasin = mpl.cm.get_cmap('viridis')
+        # from palettable.cartocolors.qualitative import Safe_3 # colormap import
+        # cmapColor_subbasin = Safe_3.mpl_colormap
+        cmapColor_subbasin = mpl.cm.get_cmap('viridis')
         figTitleSubbasin    = ''
         contour_subbasin    = None
         #----------------------------------#
-    
+
         # BATHYMETRY 
         #----------------------------------#
         cmapColor_bathy  = 'YlGnBu'
         cbar_title_bathy = 'Bathymetry (m)'
-    
+
         #  Automatic or manual colormap limits bathymetry
         if manual_lim_bathy == 'n': 
             cmap_bathy = cmapColor_bathy
@@ -685,10 +693,10 @@ for ind_file in np.arange(0,length_loop):
             cmap_bathy = mpl.cm.get_cmap(cmapColor_bathy)
             bounds     = np.arange(min_lim_bathy ,max_lim_bathy ,step_bathy)
             norm_bathy = mpl.colors.BoundaryNorm(bounds, cmap_bathy.N)
-    
+
         contour_bathy = None
         #----------------------------------#
-    
+
         # WIND SPEED 850 hPa
         #----------------------------------#
         if "z850" in globals():
@@ -699,13 +707,13 @@ for ind_file in np.arange(0,length_loop):
             # contour_z850       = np.array([1200, 1300, 1400, 1500, 1520])
             contour_z850 = np.linspace(z850.min(),z850.max(),nbContourLines)
         #----------------------------------#
-    
+
         # SALINITY
         #----------------------------------#
         cmapColor_salinity = 'magma' #gnuplot2
-    
+
         if "SSS" in globals(): 
-    
+
             cbar_title_sss     = 'SSS (sos) (PSU)'
             
             #  Automatic or manual colormap limits SSS
@@ -722,9 +730,9 @@ for ind_file in np.arange(0,length_loop):
                 contour_sss   = norm_sss.boundaries[::intervContour]
             else:
                 contour_sss    = np.linspace(SSS_mean.min(),SSS_mean.max(),nbContourLines)
-    
+
         if "zo_salinity" in globals(): 
-    
+
             cbar_title_zosalin         = 'Zonal salinity (PSU)'
             
             #  Automatic or manual colormap limits zonal salinity
@@ -741,13 +749,13 @@ for ind_file in np.arange(0,length_loop):
             else:
                 contour_zosalin = np.linspace(zo_salinity_mean.min(),zo_salinity_mean.max(),nbContourLines)
         #----------------------------------#
-    
+
         # TEMPERATURE
         #----------------------------------#
         cmapColor_temp           = 'inferno' #gnuplot
-    
+
         if "SST" in globals(): 
-    
+
             cbar_title_sst = 'SST (tos) (°C)'
             
             #  Automatic or manual colormap limits SST
@@ -764,9 +772,9 @@ for ind_file in np.arange(0,length_loop):
                 contour_sst   = norm_sst.boundaries[::intervContour]
             else:
                 contour_sst = np.linspace(SST_mean.min(),SST_mean.max(),nbContourLines)
-    
+
         if "zo_temp" in globals(): 
-    
+
             cbar_title_zotemp        = 'Zonal temperature (zotemglo) (°C)'
             
             #  Automatic or manual colormap limits zonal temperature
@@ -785,7 +793,7 @@ for ind_file in np.arange(0,length_loop):
                 contour_zotemp = np.linspace(zo_temp_mean.min(),zo_temp_mean.max(),nbContourLines)
                 # contour_zotemp = np.linspace(norm_zotemp.boundaries[0],norm_zotemp.boundaries[-1],nbContourLines) # norm_zotemp.boundaries[::nbContourLines]
         #----------------------------------#
-    
+
         # STREAM FUNCTION
         #----------------------------------#
         cmapColor_strf    = 'BrBG_r'
@@ -810,11 +818,11 @@ for ind_file in np.arange(0,length_loop):
             cmap_bstrf        = plt.get_cmap(cmapColor_strf,len(bounds)-1)
             norm_bstrf        = mpl.colors.BoundaryNorm(bounds, cmap_bstrf.N)
         #----------------------------------#
-    
+
         # OCEAN MIXED LAYER
         #----------------------------------#
         if "omlmax" in globals():
-    
+
             cmapColor_oml    = 'PuBu'
             
             # North hemisphere
@@ -834,8 +842,8 @@ for ind_file in np.arange(0,length_loop):
                 contour_omlnh   = norm_omlnh.boundaries[::intervContour]
             else:
                 contour_omlnh = np.linspace(omlmaxNH.min(),omlmaxNH.max(),nbContourLines)
-
-            # South hemisphere    
+            
+            # South hemisphere
             fig_title_omlsh  = 'July to September average'
             cbar_title_omlsh = 'Ocean mixed layer thickness (omlmax) (m) - Southern hemisphere'
         
@@ -854,15 +862,15 @@ for ind_file in np.arange(0,length_loop):
             else:
                 contour_omlsh = np.linspace(omlmaxSH.min(),omlmaxSH.max(),nbContourLines)
         #----------------------------------#
-    
+
         # EPC100 / TPP
         #----------------------------------#
         cmapColor_epctpp  = 'ocean_r'
-    
+
         if "TPP" in globals():
-    
+
             cbar_title_intpp = 'Total Primary production of phyto depth integrated (INTPP) (g.m$^{-3}$.d$^{-1}$)'
-    
+
             # Automatic or manual colormap limits INTPP
             if manual_lim_intpp == 'n':        
                 # cmap_intpp = cmapColor_epctpp
@@ -877,13 +885,13 @@ for ind_file in np.arange(0,length_loop):
             #     contour_intpp        = norm_intpp.boundaries[::nbContourLines]
             # else:
             #     contour_intpp        = np.linspace(INTPP.min(),INTPP.max(),nbContourLines)
-    
+
             contour_intpp = None
-    
+
         if "EPC100" in globals():
             
             cbar_title_epc100 = 'Export of carbon particles at 100m (EPC100) (g.m$^{-2}$.d$^{-1}$)' # (mol.m$^{-2}$.s$^{-1}$)
-    
+
             # Automatic or manual colormap limits EPC100
             if manual_lim_epc100 == 'n':        
                 # cmap_epc100 = cmapColor_epctpp
@@ -901,13 +909,13 @@ for ind_file in np.arange(0,length_loop):
             
             contour_epc100 = None
         #----------------------------------#
-    
+
         # PO4 / NO3 / O2
         #----------------------------------#
         cmapColor_po4no3o2 = 'gist_earth'
-    
+
         if "PO4" in globals():
-    
+
             cbar_title_po4   = 'Phosphate Concentration (PO4) (µmol.m$^{-3}$)'
             
             # Automatic or manual colormap limits PO4
@@ -917,11 +925,11 @@ for ind_file in np.arange(0,length_loop):
                 cmap_po4 = mpl.cm.get_cmap(cmapColor_po4no3o2)
                 bounds   = np.arange(min_lim_po4, max_lim_po4, step_po4)
                 norm_po4 = mpl.colors.BoundaryNorm(bounds, cmap_po4.N)
-        
+
         if "zo_PO4" in globals():
             
             cbar_title_zopo4 = 'Zonal Phosphate Concentration (PO4) (µmol.m$^{-3}$)'
-            
+                    
             # Automatic or manual colormap limits zonal PO4
             if manual_lim_zopo4 == 'n':
                 cmap_zopo4, norm_zopo4 = adaptativeColorMap(zo_PO4_mean, 0.015, 0.2, cmapColor_po4no3o2)
@@ -929,16 +937,16 @@ for ind_file in np.arange(0,length_loop):
                 cmap_zopo4 = mpl.cm.get_cmap(cmapColor_po4no3o2)
                 bounds     = np.arange(min_lim_zopo4, max_lim_zopo4,step_zopo4)
                 norm_zopo4 = mpl.colors.BoundaryNorm(bounds, cmap_zopo4.N)
-    
+
             # Contour
             if len(np.unique(np.round(np.diff(norm_zopo4.boundaries),2))) != 1: # norm_zopo4 is not None:
                 intervContour = np.int32(len(norm_zopo4.boundaries)/nbContourLines)
                 contour_zopo4 = norm_zopo4.boundaries[::intervContour]
             else:
                 contour_zopo4 = np.linspace(zo_PO4_mean.min(),zo_PO4_mean.max(),nbContourLines)
-    
+
         if "NO3" in globals():
-    
+
             cbar_title_no3   = 'Nitrate Concentration (NO3) (µmol.m$^{-3}$)'
             
             # Automatic or manual colormap limits NO3
@@ -948,11 +956,11 @@ for ind_file in np.arange(0,length_loop):
                 cmap_no3 = mpl.cm.get_cmap(cmapColor_po4no3o2)
                 bounds   = np.arange(min_lim_no3,max_lim_no3,step_no3)
                 norm_no3 = mpl.colors.BoundaryNorm(bounds, cmap_no3.N)
-                
+
         if "zo_NO3" in globals():
             
             cbar_title_zono3 = 'Zonal Nitrate Concentration (NO3) (µmol.m$^{-3}$)'
-            
+
             # Automatic or manual colormap limits zonal NO3
             if manual_lim_zono3 == 'n':
                 cmap_zono3, norm_zono3 = adaptativeColorMap(zo_NO3_mean, 0.015, 0.2, cmapColor_po4no3o2)
@@ -967,9 +975,9 @@ for ind_file in np.arange(0,length_loop):
                 contour_zono3 = norm_zono3.boundaries[::intervContour]
             else:
                 contour_zono3 = np.linspace(zo_NO3_mean.min(),zo_NO3_mean.max(),nbContourLines)
-    
+
         if "O2" in globals():
-    
+
             cbar_title_o2   = 'Oxygen Concentration (O2) (µmol.m$^{-3}$)'
             
             # Automatic or manual colormap limits O2
@@ -979,11 +987,11 @@ for ind_file in np.arange(0,length_loop):
                 cmap_o2 = mpl.cm.get_cmap(cmapColor_po4no3o2)
                 bounds  = np.arange(min_lim_o2,max_lim_o2,step_o2)
                 norm_o2 = mpl.colors.BoundaryNorm(bounds, cmap_o2.N)
-                
+
         if "zo_O2" in globals():
             
             cbar_title_zoo2 = 'Zonal Oxygen Concentration (O2) (µmol.m$^{-3}$)'
-            
+
             # Automatic or manual colormap limits zonal O2
             if manual_lim_zoo2 == 'n':
                 cmap_zoo2, norm_zoo2 = adaptativeColorMap(zo_O2_mean, 0.015, 0.2, cmapColor_po4no3o2)
@@ -1227,11 +1235,11 @@ for ind_file in np.arange(0,length_loop):
     filecount  = 0
     savedfiles = []
     #----------------------------------#
-
+    
     # SUBBASINS
     #-----------------------------------------------------------------------------#
     if "subbasin_mask" in globals():
-
+    
         plotMapping(lon, lat, subbasin_mask, contour_subbasin, cbarTitleNone, land_mask, 
                 projDataIn, projDataOut, cmapColor_subbasin, normNone, figTitleSubbasin,
                 figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size)
@@ -1246,17 +1254,17 @@ for ind_file in np.arange(0,length_loop):
         patch3 = mpatches.Patch(color=color3, label='Indian sub basin')
         
         plt.legend(handles=[patch1, patch2, patch3],bbox_to_anchor=(0.65, 0.83), bbox_transform=plt.gcf().transFigure, prop={'size': plot_font_size})
-
+    
         # Save figure
-        filename = filePrefix[ind_file] + '_' + 'subbasin.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        filename = filePrefix[ind_file] + '_' + 'subbasin.' + fig_format                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
     #-----------------------------------------------------------------------------#
-
+    
     # BATHYMETRY 
     #-----------------------------------------------------------------------------#
     if "bathy" in globals():
@@ -1267,19 +1275,19 @@ for ind_file in np.arange(0,length_loop):
         
         # Save figure
         filename = filePrefix[ind_file] + '_' + 'bathy.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
     #-----------------------------------------------------------------------------#
-
-
+    
+    
     # WIND SPEED 850 hPa
     #-----------------------------------------------------------------------------#
     if "u850" in globals() and "v850" in globals() and "z850" in globals() and "lonWind" in globals() and "latWind" in globals():
-
+    
         latWindGrid[0,:] = 89.99 # trick so that z_masked_overlap works correctly and plt.contour can display correctly over the quiver map
         latWindGrid[-1,:] = -89.99
         
@@ -1316,14 +1324,14 @@ for ind_file in np.arange(0,length_loop):
         
         # Save figure
         filename = filePrefix[ind_file] + '_' + 'wind_speed_850.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
     #-----------------------------------------------------------------------------#
-
+    
     # SSS
     #-----------------------------------------------------------------------------#
     if "SSS" in globals():
@@ -1333,14 +1341,14 @@ for ind_file in np.arange(0,length_loop):
                 figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size)
         
         # Save figure
-        filename = filePrefix[ind_file] + '_' + 'SSS.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        filename = filePrefix[ind_file] + '_' + 'SSS.' + fig_format                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
-
+    
         # GIF
         #-------------------#
         if create_gif == 'y':
@@ -1348,61 +1356,61 @@ for ind_file in np.arange(0,length_loop):
             for ind in np.arange(0,SSS.shape[0]):
                 
                 fig_title = figTitleMonth[ind]
-
+    
                 plotMapping(lon, lat, SSS[ind,:,:], contour_sss, cbar_title_sss, land_mask, 
                         projDataIn, projDataOut, cmap_sss, norm_sss, fig_title,
                         figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size)
-
+    
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
                 pathFilename = savedGifPath + ind + '.' + fig_format
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
-
+    
                 plt.close()
-
+    
             makeGif(savedGifPath, "SSS.gif", timeInterv)
         #-------------------#
     #-----------------------------------------------------------------------------#
-
+    
     # ZONAL AVERAGE SALINITY
     #-----------------------------------------------------------------------------#
     if "zo_salinity" in globals():
-
+    
         plotZonalAve(latGrid, -1*depthGrid, zo_salinity_mean, contour_zosalin, cbar_title_zosalin, 
-                    cmap_zosalin, norm_zosalin, figTitleYear, figXsize, figYsize, cbar_label_size, cbar_tick_size, 
-                    title_font_size, xy_label_font_size, xy_ticks_font_size)
+                     cmap_zosalin, norm_zosalin, figTitleYear, figXsize, figYsize, cbar_label_size, cbar_tick_size, 
+                     title_font_size, xy_label_font_size, xy_ticks_font_size)
         
         filename = filePrefix[ind_file] + '_' + 'zoSalinity.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
-        if create_pdf == 'y':
+        if create_pdf == 'y':                                               
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
-
-            # GIF
+    
+        # GIF
         #-------------------#
         if create_gif == 'y':
             
             for ind in np.arange(0,zo_salinity.shape[0]):
                 
                 fig_title = figTitleMonth[ind]
-
+    
                 plotZonalAve(latGrid, -1*depthGrid, zo_salinity[ind,:,:], contour_zosalin, cbar_title_zosalin, 
-                            cmap_zosalin, norm_zosalin, fig_title, figXsize, figYsize, cbar_label_size, 
-                            cbar_tick_size, title_font_size, xy_label_font_size, xy_ticks_font_size)
-
+                             cmap_zosalin, norm_zosalin, fig_title, figXsize, figYsize, cbar_label_size, 
+                             cbar_tick_size, title_font_size, xy_label_font_size, xy_ticks_font_size)
+    
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
                 pathFilename = savedGifPath + ind + '.' + fig_format
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
-
+    
                 plt.close()
-
+    
             makeGif(savedGifPath, "zo_salinity.gif", timeInterv)
         #-------------------#
     #-----------------------------------------------------------------------------#
-
+    
     # ZONAL AVERAGE SALINITY SUBBASINS
     #-----------------------------------------------------------------------------#
     if "zo_salinity_atlmsk" in globals() and "zo_salinity_pacmsk" in globals() and "zo_salinity_indmsk" in globals():
@@ -1411,15 +1419,15 @@ for ind_file in np.arange(0,length_loop):
         
         plt.axes(ax[0])
         map1, cont1 = plotZonalAveSubPlots(latGrid, -1*depthGrid, zo_salinity_atlmsk_mean, 
-                                        contour_zosalin, cmap_zosalin, norm_zosalin)
+                                           contour_zosalin, cmap_zosalin, norm_zosalin)
         
         plt.axes(ax[1])
         map2, cont2 = plotZonalAveSubPlots(latGrid, -1*depthGrid, zo_salinity_pacmsk_mean, 
-                                        contour_zosalin, cmap_zosalin, norm_zosalin)
+                                           contour_zosalin, cmap_zosalin, norm_zosalin)
         
         plt.axes(ax[2])
         map3, cont3 = plotZonalAveSubPlots(latGrid, -1*depthGrid, zo_salinity_indmsk_mean, 
-                                        contour_zosalin, cmap_zosalin, norm_zosalin)
+                                           contour_zosalin, cmap_zosalin, norm_zosalin)
         
         ax[0].clabel(cont1,fmt=' {:.1f} '.format,fontsize='large')   
         ax[1].clabel(cont2,fmt=' {:.1f} '.format,fontsize='large')   
@@ -1437,18 +1445,18 @@ for ind_file in np.arange(0,length_loop):
         
         if norm_zosalin is not None and len(np.unique(np.round(np.diff(norm_zosalin.boundaries),2))) != 1:
             plt.text(0.5,-0.15,'Warning: Adaptative colormap (non-linear) !',horizontalalignment='center',
-                    verticalalignment='center', transform = ax[2].transAxes, fontsize=16, color='r', weight='bold')   
+                      verticalalignment='center', transform = ax[2].transAxes, fontsize=16, color='r', weight='bold')   
         
-
+    
         filename = filePrefix[ind_file] + '_' + 'zoSalinity_subbasins.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
-        if create_pdf == 'y':
+        if create_pdf == 'y':                                               
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
     #-----------------------------------------------------------------------------#
-
+    
     # SST
     #-----------------------------------------------------------------------------#  
     if "SST" in globals():
@@ -1458,14 +1466,14 @@ for ind_file in np.arange(0,length_loop):
                 figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size)
         
         # Save figure
-        filename = filePrefix[ind_file] + '_' + 'SST.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        filename = filePrefix[ind_file] + '_' + 'SST.' + fig_format                                           
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
-        if create_pdf == 'y':
+        if create_pdf == 'y':    
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
-
+    
         # GIF
         #-------------------#
         if create_gif == 'y':
@@ -1473,46 +1481,46 @@ for ind_file in np.arange(0,length_loop):
             for ind in np.arange(0,SST.shape[0]):
                 
                 fig_title = figTitleMonth[ind]
-
+    
                 plotMapping(lon, lat, SST[ind,:,:], contour_sst, cbar_title_sst, land_mask, 
                         projDataIn, projDataOut, cmap_sst, norm_sst, fig_title,
                         figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size)
-
+    
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
                 pathFilename = savedGifPath + ind + '.' + fig_format
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
-
+    
                 plt.close()
-
+    
             makeGif(savedGifPath, "SST.gif", timeInterv)
         #-------------------#
     #-----------------------------------------------------------------------------#
-
+    
     # ZONAL AVERAGE TEMPERATURE
     #-----------------------------------------------------------------------------#
     #-------------------< Test custom cmap >----------------------#
     # bounds = np.arange(-2,5,1)
     # bounds = np.append(bounds,np.arange(5,10,0.2))
     # bounds = np.append(bounds,np.arange(10,37,2))
-
+    
     # cmap = plt.get_cmap(cmapColor_temp,len(bounds)-1)
     # norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
     #-------------------------------------------------------------#
     if "zo_temp" in globals():
-
+    
         plotZonalAve(latGrid, -1*depthGrid, zo_temp_mean, contour_zotemp, cbar_title_zotemp, 
-                    cmap_zotemp, norm_zotemp, figTitleYear, figXsize, figYsize, cbar_label_size, cbar_tick_size, 
-                    title_font_size, xy_label_font_size, xy_ticks_font_size)
+                     cmap_zotemp, norm_zotemp, figTitleYear, figXsize, figYsize, cbar_label_size, cbar_tick_size, 
+                     title_font_size, xy_label_font_size, xy_ticks_font_size)
         
-        filename = filePrefix[ind_file] + '_' + 'zoTemp.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        filename = filePrefix[ind_file] + '_' + 'zoTemp.' + fig_format                                             
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
-        if create_pdf == 'y':
+        if create_pdf == 'y':  
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
-
+    
         # GIF
         #-------------------#
         if create_gif == 'y':
@@ -1520,47 +1528,47 @@ for ind_file in np.arange(0,length_loop):
             for ind in np.arange(0,zo_temp.shape[0]):
                 
                 fig_title = figTitleMonth[ind]
-
+    
                 plotZonalAve(latGrid, -1*depthGrid, zo_temp[ind,:,:], contour_zotemp, cbar_title_zotemp, 
-                            cmap_zotemp, norm_zotemp, fig_title, figXsize, figYsize, cbar_label_size, 
-                            cbar_tick_size, title_font_size, xy_label_font_size, xy_ticks_font_size)
-
+                             cmap_zotemp, norm_zotemp, fig_title, figXsize, figYsize, cbar_label_size, 
+                             cbar_tick_size, title_font_size, xy_label_font_size, xy_ticks_font_size)
+    
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
                 pathFilename = savedGifPath + ind + '.' + fig_format
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
-
+    
                 plt.close()
-
+    
             makeGif(savedGifPath, "zo_temp.gif", timeInterv)
         #-------------------#
     #-----------------------------------------------------------------------------#
-
+    
     # ZONAL AVERAGE Temperature SUBBASINS
     #-----------------------------------------------------------------------------#
     #-------------------< Test custom cmap >----------------------#
     # bounds = np.arange(-2,5,1)
     # bounds = np.append(bounds,np.arange(5,10,0.2))
     # bounds = np.append(bounds,np.arange(10,37,2))
-
+    
     # cmap = plt.get_cmap(cmapColor_temp,len(bounds)-1)
     # norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
     #-------------------------------------------------------------#
     if "zo_temp_atlmsk" in globals() and "zo_temp_pacmsk" in globals() and "zo_temp_indmsk" in globals():
-
+    
         fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(figXsize, figYsize))
         
         plt.axes(ax[0])
         map1, cont1 = plotZonalAveSubPlots(latGrid, -1*depthGrid,   zo_temp_atlmsk_mean, 
-                                        contour_zotemp, cmap_zotemp, norm_zotemp)
+                                           contour_zotemp, cmap_zotemp, norm_zotemp)
         
         plt.axes(ax[1])
         map2, cont2 = plotZonalAveSubPlots(latGrid, -1*depthGrid,   zo_temp_pacmsk_mean, 
-                                        contour_zotemp, cmap_zotemp, norm_zotemp)
+                                           contour_zotemp, cmap_zotemp, norm_zotemp)
         
         plt.axes(ax[2])
         map3, cont3 = plotZonalAveSubPlots(latGrid, -1*depthGrid,   zo_temp_indmsk_mean, 
-                                        contour_zotemp, cmap_zotemp, norm_zotemp)
+                                           contour_zotemp, cmap_zotemp, norm_zotemp)
         
         # Add labels over contour lines
         ax[0].clabel(cont1,fmt=' {:.1f} '.format,fontsize='large')   
@@ -1579,21 +1587,21 @@ for ind_file in np.arange(0,length_loop):
         
         if norm_zotemp is not None and len(np.unique(np.round(np.diff(norm_zotemp.boundaries),2))) != 1:
                 plt.text(0.5,-0.15,'Warning: Adaptative colormap (non-linear) !',horizontalalignment='center',
-                        verticalalignment='center', transform = ax[2].transAxes, fontsize=16, color='r', weight='bold')  
+                         verticalalignment='center', transform = ax[2].transAxes, fontsize=16, color='r', weight='bold')  
         
         filename = filePrefix[ind_file] + '_' + 'zoTemp_subbasins.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
-        if create_pdf == 'y':
+        if create_pdf == 'y':                                               
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
     #-----------------------------------------------------------------------------#
-
+    
     # ZONAL AVERAGE SST
     #-----------------------------------------------------------------------------#
     if "zo_temp" in globals():
-
+    
         fig, ax = plt.subplots(figsize=(figXsize, figYsize))
         
         major_yticks = np.arange(0, 35+1E-9, 5)
@@ -1612,32 +1620,32 @@ for ind_file in np.arange(0,length_loop):
         plt.xticks(major_xticks , fontsize = xy_ticks_font_size)
         plt.yticks(major_yticks , fontsize = xy_ticks_font_size)
         # plt.ylim(c_lev_zosst[0],c_lev_zosst[1])
-                
-        filename = filePrefix[ind_file] + '_' + 'zoSST.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+                   
+        filename = filePrefix[ind_file] + '_' + 'zoSST.' + fig_format                                              
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
-        if create_pdf == 'y':
+        if create_pdf == 'y': 
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
     #-----------------------------------------------------------------------------#
-
+    
     # ZONAL AVERAGE STREAM FUNCTION
     #-----------------------------------------------------------------------------#
     if "zo_stream_function" in globals():
-
+    
         plotZonalAve(latGrid, -1*depthGrid, zo_stream_function_mean, contour_zostrf, cbar_title_zostrf, 
-                    cmap_zostrf, norm_zostrf, figTitleYear, figXsize, figYsize, cbar_label_size, cbar_tick_size, 
-                    title_font_size, xy_label_font_size, xy_ticks_font_size)
+                     cmap_zostrf, norm_zostrf, figTitleYear, figXsize, figYsize, cbar_label_size, cbar_tick_size, 
+                     title_font_size, xy_label_font_size, xy_ticks_font_size)
         
         filename = filePrefix[ind_file] + '_' + 'zoStreamFunc.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
-        if create_pdf == 'y':
+        if create_pdf == 'y':                                               
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
-
+    
         # GIF
         #-------------------#
         if create_gif == 'y':
@@ -1645,22 +1653,22 @@ for ind_file in np.arange(0,length_loop):
             for ind in np.arange(0,zo_stream_function.shape[0]):
                 
                 fig_title = figTitleMonth[ind]
-
+    
                 plotZonalAve(latGrid, -1*depthGrid, zo_stream_function[ind,:,:], contour_zostrf, cbar_title_zostrf, 
-                            cmap_zostrf, norm_zostrf, fig_title, figXsize, figYsize, cbar_label_size, 
-                            cbar_tick_size, title_font_size, xy_label_font_size, xy_ticks_font_size)
-
+                             cmap_zostrf, norm_zostrf, fig_title, figXsize, figYsize, cbar_label_size, 
+                             cbar_tick_size, title_font_size, xy_label_font_size, xy_ticks_font_size)
+    
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
                 pathFilename = savedGifPath + ind + '.' + fig_format
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
-
+    
                 plt.close()
-
+    
             makeGif(savedGifPath, "zo_stream_function.gif", timeInterv)
         #-------------------# 
     #-----------------------------------------------------------------------------#
-
+    
     # BAROTROPIC STREAM FUNCTION
     #-----------------------------------------------------------------------------#
     if "baro_stream_function" in globals():
@@ -1670,14 +1678,14 @@ for ind_file in np.arange(0,length_loop):
                 figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size)
         
         # Save figure
-        filename = filePrefix[ind_file] + '_' + 'baroStreamFunc.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        filename = filePrefix[ind_file] + '_' + 'baroStreamFunc.' + fig_format                                            
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
-
+    
         # GIF
         #-------------------#
         if create_gif == 'y':
@@ -1685,26 +1693,26 @@ for ind_file in np.arange(0,length_loop):
             for ind in np.arange(0,baro_stream_function.shape[0]):
                 
                 fig_title = figTitleMonth[ind]
-
+    
                 plotMapping(lon, lat, baro_stream_function[ind,:,:], contour_bstrf, cbar_title_bstrf, land_mask, 
                         projDataIn, projDataOut, cmap_bstrf, norm_bstrf, fig_title,
                         figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size)
-
+    
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
                 pathFilename = savedGifPath + ind + '.' + fig_format
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
-
+    
                 plt.close()
-
+    
             makeGif(savedGifPath, "baro_stream_function.gif", timeInterv)
         #-------------------#
     #-----------------------------------------------------------------------------#    
-
+    
     # OCEAN MIXED LAYER
     #-----------------------------------------------------------------------------#
     if "omlmaxNH" in globals():
-
+    
         #-----------------------< Northern Hemisphere >-----------------------#    
         lon_lim_nh = [-180,180]
         lat_lim_nh = [45,90]
@@ -1717,13 +1725,13 @@ for ind_file in np.arange(0,length_loop):
         
         # Save figure
         filename = filePrefix[ind_file] + '_' + 'omlmaxNH.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
-
+    
         #-----------------------< Southern Hemisphere >-----------------------#    
         lon_lim_sh = [-180,180]
         lat_lim_sh = [-90,-45]
@@ -1735,14 +1743,14 @@ for ind_file in np.arange(0,length_loop):
         
         # Save figure
         filename = filePrefix[ind_file] + '_' + 'omlmaxSH.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
     #-----------------------------------------------------------------------------#
-
+    
     # INTPP
     #-----------------------------------------------------------------------------#
     if "TPP" in globals():
@@ -1753,13 +1761,13 @@ for ind_file in np.arange(0,length_loop):
         
         # Save figure
         filename = filePrefix[ind_file] + '_' + 'intpp.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
-
+    
         # GIF
         #-------------------#
         if create_gif == 'y':
@@ -1767,39 +1775,39 @@ for ind_file in np.arange(0,length_loop):
             for ind in np.arange(0,INTPP.shape[0]):
                 
                 fig_title = figTitleMonth[ind]
-
+    
                 plotMapping(lon, lat, INTPP[ind,:,:], contour_intpp, cbar_title_intpp, land_mask, 
                         projDataIn, projDataOut, cmap_intpp, norm_intpp, fig_title,
                         figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size)
-
+    
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
                 pathFilename = savedGifPath + ind + '.' + fig_format
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
-
+    
                 plt.close()
-
+    
             makeGif(savedGifPath, "INTPP.gif", timeInterv)
         #-------------------#
     #-----------------------------------------------------------------------------#
-
+    
     # EPC100
     #-----------------------------------------------------------------------------#
     if "EPC100" in globals():
-
+    
         plotMapping(lon, lat, EPC100_mean, contour_epc100, cbar_title_epc100, land_mask, 
                     projDataIn, projDataOut, cmap_epc100, norm_epc100, figTitleYear,
                     figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size)
         
         # Save figure
         filename = filePrefix[ind_file] + '_' + 'epc100.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
-
+    
         # GIF
         #-------------------#
         if create_gif == 'y':
@@ -1807,22 +1815,22 @@ for ind_file in np.arange(0,length_loop):
             for ind in np.arange(0,EPC100.shape[0]):
                 
                 fig_title = figTitleMonth[ind]
-
+    
                 plotMapping(lon, lat, EPC100[ind,:,:], contour_epc100, cbar_title_epc100, land_mask, 
                         projDataIn, projDataOut, cmap_epc100, norm_epc100, fig_title,
                         figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size)
-
+    
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
                 pathFilename = savedGifPath + ind + '.' + fig_format
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
-
+    
                 plt.close()
-
+    
             makeGif(savedGifPath, "EPC100.gif", timeInterv)
         #-------------------#
     #-----------------------------------------------------------------------------#
-
+    
     # PO4
     #-----------------------------------------------------------------------------#
     if "PO4" in globals():
@@ -1836,14 +1844,14 @@ for ind_file in np.arange(0,length_loop):
         
         # Save figure
         filename = filePrefix[ind_file] + '_' + 'PO4_lev.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
         #-------------------------------------------------#
-        
+
     if "zo_PO4" in globals(): 
         # ZONAL AVERAGE PO4
         #-------------------------------------------------#
@@ -1852,11 +1860,11 @@ for ind_file in np.arange(0,length_loop):
                     title_font_size, xy_label_font_size, xy_ticks_font_size)
         
         filename = filePrefix[ind_file] + '_' + 'zoPO4.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
 
         # GIF
@@ -1881,11 +1889,11 @@ for ind_file in np.arange(0,length_loop):
             makeGif(savedGifPath, "zo_PO4.gif", timeInterv)
         #-------------------#
         #-------------------------------------------------#
-        
+    
         # ZONAL AVERAGE PO4 SUBBASINS
         #-------------------------------------------------#
         if "zo_PO4_atlmsk" in globals() and "zo_PO4_pacmsk" in globals() and "zo_PO4_indmsk" in globals():
-            
+
             fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(figXsize, figYsize))
             
             plt.axes(ax[0])
@@ -1917,11 +1925,11 @@ for ind_file in np.arange(0,length_loop):
                             verticalalignment='center', transform = ax[2].transAxes, fontsize=16, color='r', weight='bold')
             
             filename = filePrefix[ind_file] + '_' + 'zoPO4_subbasins.' + fig_format
-            pathFilename = savedFigPath + filename                    
+            pathFilename = savedFigPath + filename
             plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
             if create_pdf == 'y':
                 filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-                os.system('ln -s ' + pathFilename + ' ' + lnfile)
+                os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
                 savedfiles.append(filename)
         #-------------------------------------------------#
     #-----------------------------------------------------------------------------#
@@ -1938,15 +1946,15 @@ for ind_file in np.arange(0,length_loop):
         
         # Save figure
         filename = filePrefix[ind_file] + '_' + 'NO3_lev.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
         #-------------------------------------------------#
-    
-    if "zo_NO3" in globals(): 
+        
+    if "zo_NO3" in globals():     
         # ZONAL AVERAGE NO3
         #-------------------------------------------------#
         plotZonalAve(latGrid, -1*depthGrid, zo_NO3_mean, contour_zono3, cbar_title_zono3, 
@@ -1954,11 +1962,11 @@ for ind_file in np.arange(0,length_loop):
                     title_font_size, xy_label_font_size, xy_ticks_font_size)
         
         filename = filePrefix[ind_file] + '_' + 'zoNO3.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
 
         # GIF
@@ -1987,7 +1995,7 @@ for ind_file in np.arange(0,length_loop):
         # ZONAL AVERAGE NO3 SUBBASINS
         #-------------------------------------------------#
         if "zo_NO3_atlmsk" in globals() and "zo_NO3_pacmsk" in globals() and "zo_NO3_indmsk" in globals():
-            
+
             fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(figXsize, figYsize))
             
             plt.axes(ax[0])
@@ -2023,7 +2031,7 @@ for ind_file in np.arange(0,length_loop):
             plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
             if create_pdf == 'y':
                 filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-                os.system('ln -s ' + pathFilename + ' ' + lnfile)
+                os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
                 savedfiles.append(filename)
         #-------------------------------------------------#
     #-----------------------------------------------------------------------------#
@@ -2040,15 +2048,15 @@ for ind_file in np.arange(0,length_loop):
         
         # Save figure
         filename = filePrefix[ind_file] + '_' + 'O2_lev.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
         #-------------------------------------------------#
-        
-    if "zo_O2" in globals():
+
+    if "zo_O2" in globals():        
         # ZONAL AVERAGE O2
         #-------------------------------------------------#
         plotZonalAve(latGrid, -1*depthGrid, zo_O2_mean, contour_zoo2, cbar_title_zoo2, 
@@ -2059,11 +2067,11 @@ for ind_file in np.arange(0,length_loop):
         plt.clabel(cont1, fmt=' {:.1f} '.format, fontsize='x-large')                                       # Add labels over contour lines
                 
         filename = filePrefix[ind_file] + '_' + 'zoO2.' + fig_format
-        pathFilename = savedFigPath + filename                                               
+        pathFilename = savedFigPath + filename
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
 
         # GIF
@@ -2092,7 +2100,7 @@ for ind_file in np.arange(0,length_loop):
         # ZONAL AVERAGE O2 SUBBASINS
         #-------------------------------------------------#
         if "zo_O2_atlmsk" in globals() and "zo_O2_pacmsk" in globals() and "zo_O2_indmsk" in globals():
-        
+
             fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(figXsize, figYsize))
             
             plt.axes(ax[0])
@@ -2130,11 +2138,11 @@ for ind_file in np.arange(0,length_loop):
                             verticalalignment='center', transform = ax[2].transAxes, fontsize=16, color='r', weight='bold')
             
             filename = filePrefix[ind_file] + '_' + 'zoO2_subbasins.' + fig_format
-            pathFilename = savedFigPath + filename                         
+            pathFilename = savedFigPath + filename
             plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
             if create_pdf == 'y':
                 filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-                os.system('ln -s ' + pathFilename + ' ' + lnfile)
+                os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
                 savedfiles.append(filename)
         #-------------------------------------------------#
     #-----------------------------------------------------------------------------#
@@ -2144,8 +2152,8 @@ for ind_file in np.arange(0,length_loop):
     #=============================================================================#
 
     if create_pdf == 'y':
-        
-        dopdf(savedPdfPath, savedfiles, 'file', filecount, filePrefix[ind_file], sentence_to_use[ind_file])
+
+        dopdf(savedPdfPath, savedfiles, f'userData/{profileName}/file', filecount, filePrefix[ind_file], sentence_to_use[ind_file])
 
     #%%===========================================================================#
     #                            --< DIFF COMPUTATION >--                         #
@@ -2203,6 +2211,7 @@ for ind_file in np.arange(0,length_loop):
             if "temp" in globals():
                 zo_temp_S1 = zo_temp
                 del temp
+                del zo_temp, zo_temp_mean
 
             if "zo_temp_atlmsk" in globals() and "zo_temp_pacmsk" in globals() and "zo_temp_indmsk" in globals():
                 del zo_temp_atlmsk, zo_temp_atlmsk_mean
@@ -2210,7 +2219,7 @@ for ind_file in np.arange(0,length_loop):
                 del zo_temp_indmsk, zo_temp_indmsk_mean
 
             if "zo_temp" in globals():
-                del zo_temp, zo_temp_mean
+                del zo_temp
 
             if "zo_stream_function" in globals():
                 zo_stream_function_S1 = zo_stream_function
@@ -2384,64 +2393,6 @@ for ind_file in np.arange(0,length_loop):
             
             if "O2" in globals():
                 del O2, O2_mean
-
-
-# lon_S1
-# lat_S1
-# deptht_S1   
-# zo_lat_S1   
-# latGrid_S1  
-# depthGrid_S1
-
-# land_mask_S1
-
-# SSS_S1 
-# zo_salinity_S1 = zo_salinity
-# SST_S1
-# zo_temp_S1
-# zo_stream_function_S1
-# baro_stream_function_S1
-# omlmax_S1
-# INTPP_S1
-# EPC100_S1
-# zo_PO4_S1
-# zo_NO3_S1
-# zo_O2_S1
-
-
-#-------------------------------------------------------------------#
-# def myCustomInterp3(lon_in,lat_in, var_in, lon_out, lat_out):
-
-#     import numpy as np
-#     from scipy.interpolate import griddata
-
-#     coord_in  = np.array([lon_in.flatten(),lat_in.flatten()]).T
-#     coord_out = np.array([lon_out.flatten(),lat_out.flatten()]).T
-#     var_out = np.ma.zeros(shape=(var_in.shape[0], lon_out.shape[0], lon_out.shape[1]))
-
-#     for ind in np.arange(0, var_in.shape[0]):
-
-#         var_interp = griddata(coord_in, var_in[ind,::].flatten(), coord_out, method='nearest')
-#         var_interp_reshaped   = var_interp.reshape(lon_out.shape)
-#         var_out[ind,::] = var_interp_reshaped
-
-#     return var_out
-#-------------------------------------------------------------------#
-
-# coord_in  = np.array([lon.flatten(),lat.flatten()]).T
-# coord_out = np.array([lon_stored.flatten(),lat_stored.flatten()]).T
-# 
-# var_out = np.ma.zeros(shape=(SSS.shape[0], lon_stored.shape[0], lon_stored.shape[1]))
-# 
-# for ind in np.arange(0, SSS.shape[0]):
-#     var_interp = griddata(coord_in, SSS[ind,::].flatten(), coord_out, method='nearest')
-#     var_interp_reshaped   = var_interp.reshape(lon_stored.shape)
-# 
-#     var_out[ind,::] = var_interp_reshaped
-
-
-
-
-
+   
 
 # %%
