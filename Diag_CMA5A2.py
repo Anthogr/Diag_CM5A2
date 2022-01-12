@@ -89,7 +89,8 @@ maskFile     = ["C30MaTMP_mesh_mask.nc",
 bathyFile    = ["bathyORCA2.RupelianTotalV1.nc", 
                 ""]
 
-subBasinFile = ["subbasins_rupelianTot.nc"]
+subBasinFile = ["subbasins_rupelianTot.nc", 
+                ""]
 #---------------------------------------------------#
 
 # Manual or automatic colormap limits 
@@ -120,16 +121,15 @@ manual_lim_zoo2    = 'n'; min_lim_zoo2    = 0; max_lim_zoo2    = 100; step_zoo2 
 # Check if all list variables are the same length
 #------------------------------------------------------#
 if not len(filePrefix) == len(maskFile) == len(bathyFile) == len(subBasinFile) == len(dataDirPath) == len(sentence_to_use):
-    import sys
-    
-    err_saparator = "----------------------------------------------------------------------------------"
-    err_line_1 = "/!\ Lengths of list variables are not equal /!\ "
-    err_line_2 = "            Check: dataDirPath - filePrefix - maskFile - bathyFile - subBasinFile)"
-    err_line_3 = "            Remember you can add a str element to a list variable and leave it"
-    err_line_4 = "            blank if path or file doesn't exist"
-    
-    print("\n" + err_saparator)    
-    sys.exit(err_line_1 + "\n" + err_line_2 + "\n" + err_line_3 + "\n" + err_line_4 + "\n" + err_saparator)
+    err_str = f"""\n----------------------------------------------------------------------
+/!\ Lengths of list variables are not equal /!\ 
+Check: dataDirPath - filePrefix - maskFile - bathyFile - subBasinFile
+Remember you can add a str element to a list variable and leave it
+blank if path or file doesn't exist
+----------------------------------------------------------------------
+"""
+
+    sys.exit(err_str)
 #------------------------------------------------------#
 
 # Create folders for figures / PDF / GIF if specidfied 
