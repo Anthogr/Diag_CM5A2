@@ -19,15 +19,15 @@ timeInterv = 250 # Time in ms between each frame of the gif file, must be intege
 
 # files you want to be loaded and their path location
 #---------------------------------------------------#
+dataDirOutput = [""] # Where model output files are located
+filePrefix    = [""] # [filePrefix]_grid_[X].nc with [X] = T, U, V or W
+
 dataDirMask = [""] # Where mesh mask file is located
 maskFile    = [""]
 
 dataDirBathy = [""] # Where bathy and subabsin files are located
 bathyFile    = [""]
 subBasinFile = [""]
-
-dataDirOutput = [""] # Where model output files are located
-filePrefix    = [""] # [filePrefix]_grid_[X].nc with [X] = T, U, V or W
 #---------------------------------------------------#
 
 # Manual or automatic colormap limits

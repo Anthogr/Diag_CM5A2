@@ -85,13 +85,13 @@ from Toolz import (z_masked_overlap, readncfile, dopdf, dispGridCoastline,
 #   - If profile name entered already exists, the script will use the related 
 #     userName_profile.py file and run the script
 
-print('\n\n\n==========================< Diag_CMA5A2 >==========================')
+print('\n\n\n================================< Diag_CMA5A2 >================================')
 
 # Initialization
 #------------------------------------------------------#
 # Ask for profile name
 promptProfile = f"""Enter your profile name:
-(This is a simple identifier that will allow to save your settings to run the script)\n"""
+(This is an identifier that will allow to save your settings to run the script)\n"""
 profileName   = input(promptProfile)
 
 # Extract path name that will contain all the user related data
@@ -103,7 +103,7 @@ Profile {profileName} has been created\n
    {profilePath}/{profileName}_profile.py
 2) Relaunch the script
 3) When prompted for the profile name, re-enter {profileName} so the script
-   will run using the newly edited {profileName}_profile.py file
+   will run by using the newly edited {profileName}_profile.py file
 -------------------------------------
 ===================================================================
 """
@@ -118,7 +118,7 @@ if os.system('[ ! -d "' + profilePath + '" ]') == 0:
         copyfile('defaultProfile.py', f'userData/{profileName}/{profileName}_profile.py') 
         sys.exit(str_created_profile)
     elif create_profile == 'n':
-        sys.exit('\nProgram ended\n===================================================================')
+        sys.exit('\nProgram ended\n===============================================================================')
 
 # And if folder and profileName_profile.py exist: load variables in profileName_profile.py
 elif os.system('[ -f "' + profilePath + f'/{profileName}_profile.py' + '" ]') == 0:
@@ -126,10 +126,27 @@ elif os.system('[ -f "' + profilePath + f'/{profileName}_profile.py' + '" ]') ==
     for varname, val in varModule.__dict__.items():
         if (varname.startswith('__') and varname.endswith('__'))==False : # get the negation of the expression between parentethis
             exec(varname + " = varModule." + varname)
-    print(f'\n-------------------------------------\nVariables in {profileName}_profile.py loaded\n-------------------------------------')
+    print(f'\n----------------------------------------------\nVariables in {profileName}_profile.py loaded\n----------------------------------------------')
 
 else:
      sys.exit(f'/!\ Warning, {profilePath}/{profileName}_profile.py doesn''t exist')
+#------------------------------------------------------#
+
+# Check if all list variables are the same length
+#------------------------------------------------------#
+if not len(sentence_to_use) == len(dataDirOutput) == len(filePrefix) == len(dataDirMask) == len(maskFile) == len(dataDirBathy) == len(bathyFile) == len(subBasinFile):
+    err_str = f"""\n------------------------------------------------------------------
+/!\ Lengths of list variables are not equal /!\ 
+Check in userData/{profileName}/{profileName}_profile.py:
+- sentence_to_use - dataDirOutput - filePrefix - dataDirMask
+- maskFile - dataDirBathy - bathyFile - subBasinFile
+Remember you can add a str element to a list variable and leave it
+blank if path or file doesn't exist
+------------------------------------------------------------------
+===============================================================================
+"""
+
+    sys.exit(err_str)
 #------------------------------------------------------#
 
 # Create folders for figures / PDF / GIF if specidfied 
@@ -156,13 +173,13 @@ if create_gif == 'y':
 # simulation 1 & 2
 #------------------------------------------------------#
 if len(filePrefix) == 2:
-    promptDiff  = f"Create pdf difference: [{filePrefix[0]}] - [{filePrefix[1]}]? (y/n)\n"
+    promptDiff  = f"\nCreate pdf difference: [{filePrefix[0]}] - [{filePrefix[1]}]? (y/n)\n"
     create_pdf_diff = input(promptDiff)
     while create_pdf_diff != 'y' and create_pdf_diff != 'n':
         print('/!\\ Answer not valid /!\\')
         create_pdf_diff = input(promptDiff)
     if create_pdf_diff == 'y':
-        promptDiff2 = f"Notes to write in pdf?\n"
+        promptDiff2 = f"Notes to write in pdf:\n"
         sentence_to_use.append(input(promptDiff2))
 else:
     create_pdf_diff = 'n'
@@ -2211,14 +2228,15 @@ for ind_file in np.arange(0,length_loop):
             if "temp" in globals():
                 zo_temp_S1 = zo_temp
                 del temp
-            
-            if "zo_temp" in globals():
                 del zo_temp, zo_temp_mean
 
             if "zo_temp_atlmsk" in globals() and "zo_temp_pacmsk" in globals() and "zo_temp_indmsk" in globals():
                 del zo_temp_atlmsk, zo_temp_atlmsk_mean
                 del zo_temp_pacmsk, zo_temp_pacmsk_mean
                 del zo_temp_indmsk, zo_temp_indmsk_mean
+
+            if "zo_temp" in globals():
+                del zo_temp
 
             if "zo_stream_function" in globals():
                 zo_stream_function_S1 = zo_stream_function
@@ -2393,4 +2411,5 @@ for ind_file in np.arange(0,length_loop):
             if "O2" in globals():
                 del O2, O2_mean
    
+
 # %%
