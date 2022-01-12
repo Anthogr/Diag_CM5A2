@@ -6,7 +6,7 @@ def readncfile(inpath, indic, mydata):
     
     #ANTHOG added: Case insensitive variable name search
     #-----------------------------------------------#
-    # For exemple if you entrered in a specific dictionnary a variable name like 
+    # For example if you entrered in a specific dictionnary a variable name like 
     # x = 'nav_lon' and it is actually 'NAV_LON' in the nc file the few line below 
     # will change x = 'NAV_LON' so the variable will be found and loaded
     

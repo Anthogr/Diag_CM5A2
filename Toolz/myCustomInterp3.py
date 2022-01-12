@@ -11,7 +11,7 @@
 # #      Grid_out = [ Z, lon_out, lat_out]
 # #
 # # Notice that Grid_in and Grid_out have the same 1st dimension: Z
-# # (it can be time or depth for exemple)
+# # (it can be time or depth for example)
 # #
 # # 2D interpolation will occur over 2nd and 3rd dimensions of the grid
 # # and this will be done for each element of the 1st dimension of the grid 

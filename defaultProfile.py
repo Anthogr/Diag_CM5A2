@@ -1,9 +1,9 @@
 # Note: all the variables in list format have to contain the same number of elements. 
-#       For exemple if you choose 2 experiements, sentence_to_use has to be 2 elements long
+#       For example if you choose 2 experiements, sentence_to_use has to be 2 elements long
 #       even if you leave it blank (sentence_to_use = ['','']). Same happens for other list 
 #       variables.
 #       Some path and file names can be left blank if they don't exist. Check the
-#       userData/PROFILE_EXEMPLE/PROFILE_EXEMPLE_profile.py.
+#       userData/PROFILE_EXAMPLE/PROFILE_EXAMPLE_profile.py.
 
 # Figures / PDF / GIF settings
 #---------------------------------------------------#
