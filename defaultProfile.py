@@ -2,40 +2,32 @@
 #       For exemple if you choose 2 experiements, sentence_to_use has to be 2 elements long
 #       even if you leave it blank (sentence_to_use = ['','']). Same happens for other list 
 #       variables.
+#       Some path and file names can be left blank if they don't exist. Check the
+#       userData/PROFILE_EXEMPLE/PROFILE_EXEMPLE_profile.py.
 
-
-# Figures / PDF / GIF settings 
+# Figures / PDF / GIF settings
 #---------------------------------------------------#
-fig_format = 'png' # Figures format ('png' / 'pdf')
+fig_format = '' # Figures format ('png' / 'pdf')
 
-create_pdf = 'y'          # ('y' = yes / 'n' = no)
-sentence_to_use = ['',''] # Notes to write in pdf, can be left blank
+create_pdf = ''       # ('y' = yes / 'n' = no)
+sentence_to_use = [''] # Notes to write in pdf, can be left blank
 
-create_gif = 'n' # ('y' = yes / 'n' = no)
+create_gif = '' # ('y' = yes / 'n' = no)
 timeInterv = 250 # Time in ms between each frame of the gif file, must be integer
 #---------------------------------------------------#
 
 
 # files you want to be loaded and their path location
 #---------------------------------------------------#
-dataDirMask = ["/ccc/work/cont003/gen2212/p519don/",
-               "/ccc/work/cont003/gen2212/p25sepul/OHC_BSF/"] # Where mesh mask file is located
-maskFile    = ["C30MaTMP_mesh_mask.nc",
-               "NORIVER-00_mesh_mask.nc"]
+dataDirMask = [""] # Where mesh mask file is located
+maskFile    = [""]
 
-dataDirBathy = ["/ccc/work/cont003/gen2212/p519don/BC_PALEOIPSL/NEMO/30MaTot/",
-                ""] # Where bathy and subabsin files are located
-bathyFile    = ["bathyORCA2.RupelianTotalV1.nc",
-                ""]
-subBasinFile = ["subbasins_rupelianTot.nc",
-                ""]
+dataDirBathy = [""] # Where bathy and subabsin files are located
+bathyFile    = [""]
+subBasinFile = [""]
 
-dataDirOutput = ["/ccc/store/cont003/gen2212/p519don/IGCM_OUT/IPSLCM5A2/PROD/paleo/C30MaTotV1-3X/",
-                 "/ccc/store/cont003/gen2212/p25sepul/IGCM_OUT/IPSLCM5A2/PROD/piControl/NORIVER-00/"] # Where model output files are located
-filePrefix    = ["C30MaTotV1-3X_SE_4805_4854_1M",
-                 "NORIVER-00_SE_2000_2009_1M"] # [filePrefix]_grid_[X].nc with [X] = T, U, V or W
-                                                     # [filePrefix]_diad_T.nc
-                                                     # ...
+dataDirOutput = [""] # Where model output files are located
+filePrefix    = [""] # [filePrefix]_grid_[X].nc with [X] = T, U, V or W
 #---------------------------------------------------#
 
 # Manual or automatic colormap limits

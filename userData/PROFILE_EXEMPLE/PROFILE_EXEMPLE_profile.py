@@ -2,7 +2,8 @@
 #       For exemple if you choose 2 experiements, sentence_to_use has to be 2 elements long
 #       even if you leave it blank (sentence_to_use = ['','']). Same happens for other list 
 #       variables.
-
+#	Some path and file names can be left blank if they don't exist. Check the 
+#       userData/PROFILE_EXEMPLE/PROFILE_EXEMPLE_profile.py.
 
 # Figures / PDF / GIF settings 
 #---------------------------------------------------#
