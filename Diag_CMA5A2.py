@@ -65,20 +65,6 @@ from Toolz import (z_masked_overlap, readncfile, dopdf, dispGridCoastline,
 #%%===========================================================================#
 #                         --< PARAMETERS TO DEFINE >--                        #
 #=============================================================================#
-# files you want to be loaded and their path location
-#---------------------------------------------------#
-filePrefix   = ["C30MaTotV1-3X_SE_4805_4854_1M", 
-                "NORIVER-00_SE_2000_2009_1M"] # [filePrefix]_grid_[X].nc with [X] = T, U, V or W
-maskFile     = ["C30MaTMP_mesh_mask.nc", 
-                "NORIVER-00_mesh_mask.nc"]
-bathyFile    = ["bathyORCA2.RupelianTotalV1.nc", 
-                ""]
-subBasinFile = ["subbasins_rupelianTot.nc", 
-                ""]
-dataDirPath  = ["/Users/anthony/Documents/Model/Data_CMA5A2/",
-                "/Users/anthony/Documents/Model/Data_CMA5A2/CTRL/"]
-#---------------------------------------------------#
-
 #---------------------------------------------------#
 fig_format = 'png'
 
@@ -89,14 +75,22 @@ create_gif = 'n'
 timeInterv = 250
 #---------------------------------------------------#
 
-#------------------------------------#
-# filePrefix   = "NORIVER-00_SE_2000_2009_1M" # [filePrefix]_grid_[X].nc with [X] = T, U, V or W
-# maskFile     = "NORIVER-00_mesh_mask.nc"
-# bathyFile    = "bathyORCA2.RupelianTotalV1.nc"
-# subBasinFile = "subbasins_rupelianTot.nc"
-# dataDirPath  = '/Users/anthony/Documents/Model/Data_CMA5A2/CTRL/' 
-#------------------------------------#
+# files you want to be loaded and their path location
+#---------------------------------------------------#
+dataDirPath  = ["/Users/anthony/Documents/Model/Data_CMA5A2/",
+                "/Users/anthony/Documents/Model/Data_CMA5A2/CTRL/"]
 
+filePrefix   = ["C30MaTotV1-3X_SE_4805_4854_1M", 
+                "NORIVER-00_SE_2000_2009_1M"] # [filePrefix]_grid_[X].nc with [X] = T, U, V or W
+
+maskFile     = ["C30MaTMP_mesh_mask.nc", 
+                "NORIVER-00_mesh_mask.nc"]
+
+bathyFile    = ["bathyORCA2.RupelianTotalV1.nc", 
+                ""]
+
+subBasinFile = ["subbasins_rupelianTot.nc"]
+#---------------------------------------------------#
 
 # Manual or automatic colormap limits 
 # 'y' for manual, 'n' for automatic
@@ -123,6 +117,21 @@ manual_lim_zoo2    = 'n'; min_lim_zoo2    = 0; max_lim_zoo2    = 100; step_zoo2 
 #%%===========================================================================#
 #                    --< INITIALIZATION & DIFF SETTINGS >--                   #
 #=============================================================================#
+# Check if all list variables are the same length
+#------------------------------------------------------#
+if not len(filePrefix) == len(maskFile) == len(bathyFile) == len(subBasinFile) == len(dataDirPath) == len(sentence_to_use):
+    import sys
+    
+    err_saparator = "----------------------------------------------------------------------------------"
+    err_line_1 = "/!\ Lengths of list variables are not equal /!\ "
+    err_line_2 = "            Check: dataDirPath - filePrefix - maskFile - bathyFile - subBasinFile)"
+    err_line_3 = "            Remember you can add a str element to a list variable and leave it"
+    err_line_4 = "            blank if path or file doesn't exist"
+    
+    print("\n" + err_saparator)    
+    sys.exit(err_line_1 + "\n" + err_line_2 + "\n" + err_line_3 + "\n" + err_line_4 + "\n" + err_saparator)
+#------------------------------------------------------#
+
 # Create folders for figures / PDF / GIF if specidfied 
 #------------------------------------------------------#
 # Figures
