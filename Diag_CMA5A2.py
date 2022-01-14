@@ -699,19 +699,22 @@ for ind_file in np.arange(0,length_loop):
 
         # BATHYMETRY 
         #----------------------------------#
-        cmapColor_bathy  = 'YlGnBu'
-        cbar_title_bathy = 'Bathymetry (m)'
+        if "bathy" in globals():
+    
+            cmapColor_bathy  = 'YlGnBu'
+            cbar_title_bathy = 'Bathymetry (m)'
 
-        #  Automatic or manual colormap limits bathymetry
-        if manual_lim_bathy == 'n': 
-            cmap_bathy = cmapColor_bathy
-            norm_bathy = None
-        elif manual_lim_bathy == 'y':
-            cmap_bathy = mpl.cm.get_cmap(cmapColor_bathy)
-            bounds     = np.arange(min_lim_bathy ,max_lim_bathy ,step_bathy)
-            norm_bathy = mpl.colors.BoundaryNorm(bounds, cmap_bathy.N)
+            #  Automatic or manual colormap limits bathymetry
+            if manual_lim_bathy == 'n': 
+                cmap_bathy = mpl.cm.get_cmap(cmapColor_bathy)
+                bounds     = np.linspace(bathy.min(),bathy.max(),50)
+                norm_bathy = mpl.colors.BoundaryNorm(bounds, cmap_bathy.N)
+            elif manual_lim_bathy == 'y':
+                cmap_bathy = mpl.cm.get_cmap(cmapColor_bathy)
+                bounds     = np.arange(min_lim_bathy ,max_lim_bathy ,step_bathy)
+                norm_bathy = mpl.colors.BoundaryNorm(bounds, cmap_bathy.N)
 
-        contour_bathy = None
+            contour_bathy = None
         #----------------------------------#
 
         # WIND SPEED 850 hPa
