@@ -56,6 +56,11 @@ from cartopy.mpl.geoaxes import GeoAxes
 GeoAxes._pcolormesh_patched = Axes.pcolormesh
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
+import sys
+
+# ignore warnings
+# import warnings
+# warnings.filterwarnings("ignore")
 
 # Loading custom functions 
 from Toolz import (z_masked_overlap, readncfile, dopdf, dispGridCoastline,
@@ -121,12 +126,12 @@ manual_lim_zoo2    = 'n'; min_lim_zoo2    = 0; max_lim_zoo2    = 100; step_zoo2 
 # Check if all list variables are the same length
 #------------------------------------------------------#
 if not len(filePrefix) == len(maskFile) == len(bathyFile) == len(subBasinFile) == len(dataDirPath) == len(sentence_to_use):
-    err_str = f"""\n----------------------------------------------------------------------
-/!\ Lengths of list variables are not equal /!\ 
+    err_str = f"""\n     /!\ Warning: Lengths of list variables are not equal /!\\
+------------------------------------------------------------------
 Check: dataDirPath - filePrefix - maskFile - bathyFile - subBasinFile
 Remember you can add a str element to a list variable and leave it
 blank if path or file doesn't exist
-----------------------------------------------------------------------
+------------------------------------------------------------------
 """
 
     sys.exit(err_str)
@@ -250,6 +255,12 @@ for ind_file in np.arange(0,length_loop):
         dict_W = {}
         #----------------------------------#
 
+        # Add '/' at end of path if necessary
+        #----------------------------------#
+        if dataDirPath[ind_file] and dataDirPath[ind_file][-1] != '/': # if path not empty and doesn't end by '/': add '/' at the end
+            dataDirPath[ind_file] = dataDirPath[ind_file] + '/'
+        #----------------------------------#
+
         # File names
         #----------------------------------#
         nc_file_mask     = dataDirPath[ind_file] + maskFile[ind_file]
@@ -268,33 +279,59 @@ for ind_file in np.arange(0,length_loop):
         # Load variables in DATA var (check if file exist before loading)
         #----------------------------------#
         DATA = {}
+        notLoaded = []
 
         if os.path.isfile(nc_file_mask):
             DATA = readncfile(nc_file_mask, dict_mask, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_mask} doesn''t exist')
+
         if os.path.isfile(nc_file_bathy):
             DATA = readncfile(nc_file_bathy, dict_bathy, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_bathy} doesn''t exist')
+
         if os.path.isfile(nc_file_subbasin):
             DATA = readncfile(nc_file_subbasin, dict_subbasin, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_subbasin} doesn''t exist')
+
         if os.path.isfile(nc_file_T):
             DATA = readncfile(nc_file_T, dict_T, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_T} doesn''t exist')
+
         if os.path.isfile(nc_file_U):
             DATA = readncfile(nc_file_U, dict_U, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_U} doesn''t exist')
+
         if os.path.isfile(nc_file_diaptr):
             DATA = readncfile(nc_file_diaptr, dict_diaptr, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_diaptr} doesn''t exist')
+
         if os.path.isfile(nc_file_diad_T):
             DATA = readncfile(nc_file_diad_T, dict_diad_T, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_diad_T} doesn''t exist')
+
         if os.path.isfile(nc_file_ptrc_T):
             DATA = readncfile(nc_file_ptrc_T, dict_ptrc_T, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_ptrc_T} doesn''t exist')
+
         if os.path.isfile(nc_file_histmth):
             DATA = readncfile(nc_file_histmth, dict_histmth, DATA)
+        else:
+            notLoaded.append(f'{nc_file_histmth} doesn''t exist')
+
+        if notLoaded:
+            print('\n               /!\ Warning: File(s) not found /!\\\n------------------------------------------------------------------')
+            print(*notLoaded, sep = '\n')
+            print('------------------------------------------------------------------')
+            if len(notLoaded) == 9:
+                sys.exit('\n/!\ None of the files have been found /!\\')
         #----------------------------------#
 
         # Read variables in DATA and send them to work space (may be removed ?)
