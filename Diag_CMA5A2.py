@@ -126,7 +126,7 @@ elif os.system('[ -f "' + profilePath + f'/{profileName}_profile.py' + '" ]') ==
     for varname, val in varModule.__dict__.items():
         if (varname.startswith('__') and varname.endswith('__'))==False : # get the negation of the expression between parentethis
             exec(varname + " = varModule." + varname)
-    print(f'\n----------------------------------------------\nVariables in {profileName}_profile.py loaded\n----------------------------------------------')
+    print(f'\n------------------------------------------------------------------\nVariables in {profileName}_profile.py loaded\n------------------------------------------------------------------')
 
 else:
      sys.exit(f'/!\ Warning, {profilePath}/{profileName}_profile.py doesn''t exist')
@@ -135,8 +135,8 @@ else:
 # Check if all list variables are the same length
 #------------------------------------------------------#
 if not len(sentence_to_use) == len(dataDirOutput) == len(filePrefix) == len(dataDirMask) == len(maskFile) == len(dataDirBathy) == len(bathyFile) == len(subBasinFile):
-    err_str = f"""\n------------------------------------------------------------------
-/!\ Lengths of list variables are not equal /!\ 
+    err_str = f"""\n     /!\ Warning: Lengths of list variables are not equal /!\\
+------------------------------------------------------------------
 Check in userData/{profileName}/{profileName}_profile.py:
 - sentence_to_use - dataDirOutput - filePrefix - dataDirMask
 - maskFile - dataDirBathy - bathyFile - subBasinFile
@@ -144,6 +144,7 @@ Remember you can add a str element to a list variable and leave it
 blank if path or file doesn't exist
 ------------------------------------------------------------------
 ===============================================================================
+
 """
 
     sys.exit(err_str)
@@ -267,6 +268,17 @@ for ind_file in np.arange(0,length_loop):
         dict_W = {}
         #----------------------------------#
 
+        # Add '/' at end of path if necessary
+        #----------------------------------#
+        # if path not empty and doesn't end by '/': add '/' at the end
+        if dataDirMask[ind_file] and dataDirMask[ind_file][-1] != '/': 
+            dataDirMask[ind_file] = dataDirMask[ind_file] + '/'
+        if dataDirBathy[ind_file] and dataDirBathy[ind_file][-1] != '/': 
+            dataDirBathy[ind_file] = dataDirBathy[ind_file] + '/'
+        if dataDirOutput[ind_file] and dataDirOutput[ind_file][-1] != '/': 
+            dataDirOutput[ind_file] = dataDirOutput[ind_file] + '/'
+        #----------------------------------#
+
         # File names
         #----------------------------------#
         nc_file_mask     = dataDirMask[ind_file]  + maskFile[ind_file]
@@ -285,33 +297,62 @@ for ind_file in np.arange(0,length_loop):
         # Load variables in DATA var (check if file exist before loading)
         #----------------------------------#
         DATA = {}
+        notLoaded = []
 
         if os.path.isfile(nc_file_mask):
             DATA = readncfile(nc_file_mask, dict_mask, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_mask} doesn''t exist')
+
         if os.path.isfile(nc_file_bathy):
             DATA = readncfile(nc_file_bathy, dict_bathy, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_bathy} doesn''t exist')
+
         if os.path.isfile(nc_file_subbasin):
             DATA = readncfile(nc_file_subbasin, dict_subbasin, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_subbasin} doesn''t exist')
+
         if os.path.isfile(nc_file_T):
             DATA = readncfile(nc_file_T, dict_T, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_T} doesn''t exist')
+
         if os.path.isfile(nc_file_U):
             DATA = readncfile(nc_file_U, dict_U, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_U} doesn''t exist')
+
         if os.path.isfile(nc_file_diaptr):
             DATA = readncfile(nc_file_diaptr, dict_diaptr, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_diaptr} doesn''t exist')
+
         if os.path.isfile(nc_file_diad_T):
             DATA = readncfile(nc_file_diad_T, dict_diad_T, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_diad_T} doesn''t exist')
+
         if os.path.isfile(nc_file_ptrc_T):
             DATA = readncfile(nc_file_ptrc_T, dict_ptrc_T, DATA)
-            
+        else:
+            notLoaded.append(f'{nc_file_ptrc_T} doesn''t exist')
+
         if os.path.isfile(nc_file_histmth):
             DATA = readncfile(nc_file_histmth, dict_histmth, DATA)
+        else:
+            notLoaded.append(f'{nc_file_histmth} doesn''t exist')
+
+        if notLoaded:
+            print('\n               /!\ Warning: File(s) not found /!\\\n------------------------------------------------------------------')
+            print(*notLoaded, sep = '\n')
+            print('------------------------------------------------------------------')
+            if len(notLoaded) == 9:
+                sys.exit('''
+                  /!\ None of the files have been found /!\\
+===============================================================================
+''')
         #----------------------------------#
 
         # Read variables in DATA and send them to work space (may be removed ?)
