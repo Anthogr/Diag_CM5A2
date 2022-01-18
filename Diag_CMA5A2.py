@@ -284,17 +284,17 @@ for ind_file in np.arange(0,length_loop):
         if os.path.isfile(nc_file_mask):
             DATA = readncfile(nc_file_mask, dict_mask, DATA)
         else:
-            notLoaded.append(f'{nc_file_mask} doesn''t exist')
+            notLoaded.append(f'{nc_file_mask} (mask file) doesn''t exist')
 
         if os.path.isfile(nc_file_bathy):
             DATA = readncfile(nc_file_bathy, dict_bathy, DATA)
         else:
-            notLoaded.append(f'{nc_file_bathy} doesn''t exist')
+            notLoaded.append(f'{nc_file_bathy} (bathy file) doesn''t exist')
 
         if os.path.isfile(nc_file_subbasin):
             DATA = readncfile(nc_file_subbasin, dict_subbasin, DATA)
         else:
-            notLoaded.append(f'{nc_file_subbasin} doesn''t exist')
+            notLoaded.append(f'{nc_file_subbasin} (subbasin file) doesn''t exist')
 
         if os.path.isfile(nc_file_T):
             DATA = readncfile(nc_file_T, dict_T, DATA)
@@ -1197,7 +1197,7 @@ for ind_file in np.arange(0,length_loop):
             cbar_title_intpp = 'Total Primary production of phyto depth integrated (INTPP) (g.m$^{-3}$.d$^{-1}$)' + cBarTitleDiff
 
             cmap_intpp = mpl.cm.get_cmap(cmapColor_epctpp)
-            lim_intpp  = np.round(np.max(np.abs((np.max(INTPP),np.min(INTPP)))),2)
+            lim_intpp  = np.round(np.max(np.abs((np.max(INTPP_mean),np.min(INTPP_mean)))),2)
             bounds = np.linspace(-lim_intpp,lim_intpp,100)
             norm_intpp = mpl.colors.BoundaryNorm(bounds, cmap_intpp.N)
 
@@ -1212,7 +1212,7 @@ for ind_file in np.arange(0,length_loop):
             cbar_title_epc100 = 'Export of carbon particles at 100m (EPC100) (g.m$^{-2}$.d$^{-1}$)' + cBarTitleDiff # (mol.m$^{-2}$.s$^{-1}$) 
             
             cmap_epc100 = mpl.cm.get_cmap(cmapColor_epctpp)
-            lim_epc100  = np.round(np.max(np.abs((np.max(EPC100),np.min(EPC100)))),2)
+            lim_epc100  = np.round(np.max(np.abs((np.max(EPC100_mean),np.min(EPC100_mean)))),2)
             bounds = np.linspace(-lim_epc100,lim_epc100,100)
             norm_epc100 = mpl.colors.BoundaryNorm(bounds, cmap_epc100.N)
 
