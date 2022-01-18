@@ -67,6 +67,10 @@ from shutil import copyfile
 import sys
 import importlib
 
+# Ignore warnings
+import warnings
+warnings.filterwarnings("ignore")
+
 # Loading custom functions 
 from Toolz import (z_masked_overlap, readncfile, dopdf, dispGridCoastline,
                    plotMapping, plotZonalAve, plotZonalAveSubPlots, plotMappingZoom, plotMappingLev,
