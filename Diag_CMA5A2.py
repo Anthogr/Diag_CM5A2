@@ -283,48 +283,66 @@ for ind_file in np.arange(0,length_loop):
 
         if os.path.isfile(nc_file_mask):
             DATA = readncfile(nc_file_mask, dict_mask, DATA)
+        elif maskFile[ind_file]:
+            notLoaded.append(f'{nc_file_mask} doesn''t exist')
         else:
-            notLoaded.append(f'{nc_file_mask} (mask file) doesn''t exist')
+            notLoaded.append('No mask file provided')
 
         if os.path.isfile(nc_file_bathy):
             DATA = readncfile(nc_file_bathy, dict_bathy, DATA)
+        elif bathyFile[ind_file]:
+            notLoaded.append(f'{nc_file_bathy} doesn''t exist')
         else:
-            notLoaded.append(f'{nc_file_bathy} (bathy file) doesn''t exist')
+            notLoaded.append('No bathy file provided')
 
         if os.path.isfile(nc_file_subbasin):
             DATA = readncfile(nc_file_subbasin, dict_subbasin, DATA)
+        elif subBasinFile[ind_file]:
+            notLoaded.append(f'{nc_file_subbasin} doesn''t exist')
         else:
-            notLoaded.append(f'{nc_file_subbasin} (subbasin file) doesn''t exist')
+            notLoaded.append('No subbasin file provided')
 
         if os.path.isfile(nc_file_T):
             DATA = readncfile(nc_file_T, dict_T, DATA)
-        else:
+        elif filePrefix[ind_file]:
             notLoaded.append(f'{nc_file_T} doesn''t exist')
+        else:
+            notLoaded.append('No grid_T file provided')
 
         if os.path.isfile(nc_file_U):
             DATA = readncfile(nc_file_U, dict_U, DATA)
-        else:
+        elif filePrefix[ind_file]:
             notLoaded.append(f'{nc_file_U} doesn''t exist')
+        else:
+            notLoaded.append('No grid_U file provided')
 
         if os.path.isfile(nc_file_diaptr):
             DATA = readncfile(nc_file_diaptr, dict_diaptr, DATA)
-        else:
+        elif filePrefix[ind_file]:
             notLoaded.append(f'{nc_file_diaptr} doesn''t exist')
+        else:
+            notLoaded.append('No diaptr file file provided')
 
         if os.path.isfile(nc_file_diad_T):
             DATA = readncfile(nc_file_diad_T, dict_diad_T, DATA)
-        else:
+        elif filePrefix[ind_file]:
             notLoaded.append(f'{nc_file_diad_T} doesn''t exist')
+        else:
+            notLoaded.append('No diad_T file provided')
 
         if os.path.isfile(nc_file_ptrc_T):
             DATA = readncfile(nc_file_ptrc_T, dict_ptrc_T, DATA)
-        else:
+        elif filePrefix[ind_file]:
             notLoaded.append(f'{nc_file_ptrc_T} doesn''t exist')
+        else:
+            notLoaded.append('No ptrc_T file provided')
 
         if os.path.isfile(nc_file_histmth):
             DATA = readncfile(nc_file_histmth, dict_histmth, DATA)
-        else:
+        elif filePrefix[ind_file]:
             notLoaded.append(f'{nc_file_histmth} doesn''t exist')
+        else:
+            notLoaded.append('No histmth file provided')
 
         if notLoaded:
             print('\n               /!\ Warning: File(s) not found /!\\\n------------------------------------------------------------------')
