@@ -730,6 +730,7 @@ for ind_file in np.arange(0,length_loop):
                 cmap_bathy = mpl.cm.get_cmap(cmapColor_bathy)
                 bounds     = np.linspace(bathy.min(),bathy.max(),50)
                 norm_bathy = mpl.colors.BoundaryNorm(bounds, cmap_bathy.N)
+                # norm_bathy = mpl.colors.Normalize(vmin=bathy.min(), vmax=bathy.max())
             elif manual_lim_bathy == 'y':
                 cmap_bathy = mpl.cm.get_cmap(cmapColor_bathy)
                 bounds     = np.arange(min_lim_bathy ,max_lim_bathy ,step_bathy)
