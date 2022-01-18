@@ -168,7 +168,7 @@ def plotMappingZoom(lon, lat, var2plot, contourLines, cbar_title, lonLim, latLim
                             transform = outProjData,
                             colors='k', linewidths=0.7) 
         # Add labels over contour lines
-        ax.clabel(cont1,fmt=' {:.1f} '.format,fontsize='large')  
+        ax.clabel(cont1,fmt=' {:.0f} '.format,fontsize='large')  
     
     # Compute coastline
     dispGridCoastline(lon, lat, inProjData, land_mask[0,:,:], 1.25)
