@@ -7,6 +7,7 @@ from .myCustomPlots import plotZonalAve
 from .myCustomPlots import plotZonalAveSubPlots
 from .myCustomPlots import plotMappingZoom
 from .myCustomPlots import plotMappingLev
+from .myCustomPlots import plotMappingSubPlots
 from .adaptativeColorMap import adaptativeColorMap
 from .makeGif import makeGif
-from .myCustomInterp3 import myCustomInterp3
+from .myCustomInterp2 import myCustomInterp2

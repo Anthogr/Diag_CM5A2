@@ -6,9 +6,9 @@ Created on Thu Nov 18 12:00:33 2021
 @author: anthony
 """
 
-def plotMapping(lon, lat, var2plot, contourLines, cbar_title, land_mask,
+def plotMapping(lon, lat, var2plot, contourLines, land_mask,
                 inProjData, outProjData, cmap, norm, figTitle, figXsize, figYsize, 
-                cbar_label_size, cbar_tick_size, title_font_size):
+                cbar_title, cbar_label_size, cbar_tick_size, title_font_size):
     
     import numpy as np
     import matplotlib.pyplot as plt
@@ -40,20 +40,7 @@ def plotMapping(lon, lat, var2plot, contourLines, cbar_title, land_mask,
         ax.clabel(cont1, fmt=' {:.1f} '.format, fontsize='x-large')  
     
     # Compute coastline
-    #dispGridCoastline(lon, lat, inProjData, land_mask[0,:,:], 1.25)
-    
-    # # Display colorbar
-    # if cbar_title is not None:
-    #     ticks = np.linspace(norm.vmin, norm.vmax, 7, endpoint=True) # control nbb of ticks for colorbar
-    #     cbar = plt.colorbar(map1, ticks=ticks, orientation='horizontal', extend='both')
-    #     cbar.ax.set_title(cbar_title,size=cbar_label_size)
-    #     cbar.ax.tick_params(labelsize=cbar_tick_size)   
-
-    # plt.title(figTitle,fontsize=title_font_size)
-       
-    # if norm is not None and len(np.unique(np.round(np.diff(norm.boundaries),2))) != 1:
-    #     plt.text(0.5,-0.15,'Warning: Adaptative colormap (non-linear) !',horizontalalignment='center',
-    #              verticalalignment='center', transform = ax.transAxes, fontsize=16, color='r', weight='bold')    
+    #dispGridCoastline(lon, lat, inProjData, land_mask[0,:,:], 1.25)   
 
     # Display colorbar
     if cbar_title is not None:
@@ -72,7 +59,68 @@ def plotMapping(lon, lat, var2plot, contourLines, cbar_title, land_mask,
     # Titles/Labels and size
     plt.title(figTitle,fontsize=title_font_size)
     
-def plotZonalAve(lat, depth, var2plot, contourLines, cbar_title,  cmap, norm, figTitle, figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size, xy_label_font_size, xy_ticks_font_size):
+
+def plotMappingSubPlots(nrows, ncols, lon, lat, vars2plot, contourLines, land_mask,
+                inProjData, outProjData, cmap, norm, figTitle, figXsize, figYsize, 
+                cbar_title, cbar_label_size, cbar_tick_size, title_font_size):
+    
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import cartopy.crs as ccrs
+    from Toolz import (dispGridCoastline, z_masked_overlap)
+
+    fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(figXsize, figYsize), subplot_kw={'projection': outProjData})
+    
+    for i in np.arange(0,nrows*ncols):
+
+        plt.axes(ax[i])
+
+        # Display meridians and parallels
+        ax[i].gridlines(draw_labels = True) # transform = ccrs.Geodetic(),
+
+        # Choose map as global 
+        # ax.set_global()
+
+        # Computes lon and lat grids into projected cartesian coordinate X and Y
+        # as well as maskedZ in order to be in PlateCarree standard projection
+        X, Y, maskedZ = z_masked_overlap(ax[i], lon, lat, vars2plot[i],       
+                                         source_projection = ccrs.Geodetic())                                   
+
+        # Pcolormesh
+        map1 = ax[i].pcolormesh(lon, lat, maskedZ[0:-1,0:-1],                   
+                             transform = inProjData, cmap = cmap, norm = norm, shading='nearest')
+        # Contour
+        if type(contourLines) is np.ndarray:
+            cont1 = ax[i].contour(X, Y, maskedZ, contourLines,                         
+                                transform = outProjData,
+                                colors='k', linewidths=0.7)
+            # Add labels over contour lines
+            ax[i].clabel(cont1, fmt=' {:.1f} '.format, fontsize='x-large')  
+    
+        # Compute coastline
+        #dispGridCoastline(lon, lat, inProjData, land_mask[i][0,:,:], 1.25) 
+
+        # Titles/Labels and size
+        plt.title(figTitle[i], fontsize=title_font_size)
+
+    # Display colorbar
+    cbar_ax = fig.add_axes([0.16, 0.01, 0.7, 0.04]) # list [x0, y0, width, height]
+    if cbar_title is not None:
+        if len(np.unique(np.round(np.diff(norm.boundaries),2))) == 1:
+            ticks = np.linspace(norm.vmin, norm.vmax, 7, endpoint=True) # control nbb of ticks for colorbar
+            cbar = plt.colorbar(map1, cax=cbar_ax, ticks=ticks, orientation='horizontal', extend='both')
+            #cbar = fig.colorbar(map1, cax=cbar_ax, ticks=ticks, orientation='horizontal', extend='both')
+
+        elif len(np.unique(np.round(np.diff(norm.boundaries),2))) != 1:
+            plt.text(0.5,-0.15,'Warning: Adaptative colormap (non-linear) !',horizontalalignment='center',
+                    verticalalignment='center', transform = ax.transAxes, fontsize=16, color='r', weight='bold') 
+            cbar = plt.colorbar(map1, orientation='horizontal', extend='both')
+            
+        cbar.ax.set_title(cbar_title,size=cbar_label_size)
+        cbar.ax.tick_params(labelsize=cbar_tick_size)   
+
+
+def plotZonalAve(lat, depth, var2plot, contourLines, cmap, norm, figTitle, figXsize, figYsize, cbar_title, cbar_label_size, cbar_tick_size, title_font_size, xy_label_font_size, xy_ticks_font_size):
    
     import numpy as np
     import matplotlib.pyplot as plt 
@@ -88,18 +136,6 @@ def plotZonalAve(lat, depth, var2plot, contourLines, cbar_title,  cmap, norm, fi
                             colors='k', linewidths=0.7) 
         # Add labels over contour lines
         ax.clabel(cont1, fmt=' {:.1f} '.format, fontsize='x-large')
-    
-    # # Colorbar
-    # ticks = np.linspace(norm.vmin, norm.vmax, 7, endpoint=True) # control nb of ticks for colorbar
-    # cbar = plt.colorbar(map1, ticks=ticks, orientation='horizontal', extend='both')         
-    
-
-    # cbar.ax.set_title(cbar_title , size = cbar_label_size)
-    # cbar.ax.tick_params(labelsize = cbar_tick_size)
-    
-    # if norm is not None and len(np.unique(np.round(np.diff(norm.boundaries),2))) != 1:
-    #     plt.text(0.5,-0.15,'Warning: Adaptative colormap (non-linear) !',horizontalalignment='center',
-    #               verticalalignment='center', transform = ax.transAxes, fontsize=16, color='r', weight='bold')   
 
     # Display colorbar
     if cbar_title is not None:
@@ -123,19 +159,63 @@ def plotZonalAve(lat, depth, var2plot, contourLines, cbar_title,  cmap, norm, fi
     plt.yticks(fontsize = xy_ticks_font_size)
 
 
-
-def plotZonalAveSubPlots(lat, depth, var2plot, contourLines,  cmap, norm):
+def plotZonalAveSubPlots(nrows, ncols, lat, depth, var2plot, contourLines, 
+                        cmap, norm, figTitle, figXsize, figYsize, 
+                        cbar_title, cbar_label_size, cbar_tick_size, title_font_size):
    
+    import numpy as np
     import matplotlib.pyplot as plt 
+    
+    fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(figXsize, figYsize))
+    
+    for i in np.arange(0,nrows*ncols):
+
+        map1 = ax[i].pcolormesh(lat, depth, var2plot[i],                   
+                            cmap = cmap, norm = norm, shading='auto')
         
-    map1 = plt.pcolormesh(lat, depth, var2plot,                   
-                          cmap = cmap, norm = norm, shading='auto')
+        # Contour
+        if type(contourLines) is np.ndarray:
+            cont1 = ax[i].contour(lat, depth, var2plot[i], contourLines,
+                                colors='k', linewidths=0.7) 
+            if cbar_title == 'Zonal Oxygen Concentration (O2) (µmol.m$^{-3}$)':
+                cont11      = ax[i].contour(lat, depth, var2plot[i], np.array([6.5, 65]), colors='w', linewidths=0.7) # Add dysoxia and anoxia contour lines
+                ax[i].clabel(cont11, fmt=' {:.1f} '.format, fontsize='x-large')
+
+            # Add labels over contour lines
+            ax[i].clabel(cont1, fmt=' {:.1f} '.format, fontsize='x-large')
+
+        # Titles
+        ax[i].set_title(figTitle[i], fontsize=title_font_size)
+
+    cbar_ax = fig.add_axes([0.16, 0.01, 0.7, 0.04]) # list [x0, y0, width, height]
     
-    # Contour
-    cont1 = plt.contour(lat, depth, var2plot, contourLines,
-                        colors='k', linewidths=0.7)     
-    
-    return map1, cont1
+    # Display colorbar
+    if cbar_title is not None:
+        if len(np.unique(np.round(np.diff(norm.boundaries),2))) == 1:
+            ticks = np.linspace(norm.vmin, norm.vmax, 7, endpoint=True) # control nbb of ticks for colorbar
+            cbar = plt.colorbar(map1, cax=cbar_ax, ticks=ticks, orientation='horizontal', extend='both')
+            
+        elif len(np.unique(np.round(np.diff(norm.boundaries),2))) != 1:
+            plt.text(0.5,-0.15,'Warning: Adaptative colormap (non-linear) !',horizontalalignment='center',
+                     verticalalignment='center', transform = ax[i].transAxes, fontsize=16, color='r', weight='bold') 
+            cbar = plt.colorbar(map1, cax=cbar_ax, orientation='horizontal', extend='both')
+            
+        cbar.ax.set_title(cbar_title,size=cbar_label_size)
+        cbar.ax.tick_params(labelsize=cbar_tick_size)
+
+
+# def plotZonalAveSubPlots(lat, depth, var2plot, contourLines,  cmap, norm):
+#    
+#     import matplotlib.pyplot as plt 
+#         
+#     map1 = plt.pcolormesh(lat, depth, var2plot,                   
+#                           cmap = cmap, norm = norm, shading='auto')
+#     
+#     # Contour
+#     cont1 = plt.contour(lat, depth, var2plot, contourLines,
+#                         colors='k', linewidths=0.7)     
+#     
+#     return map1, cont1
 
 
 def plotMappingZoom(lon, lat, var2plot, contourLines, cbar_title, lonLim, latLim, land_mask, inProjData, outProjData, cmap, norm, figTitle, figXsize, figYsize, cbar_label_size, cbar_tick_size, title_font_size):
@@ -172,16 +252,6 @@ def plotMappingZoom(lon, lat, var2plot, contourLines, cbar_title, lonLim, latLim
     
     # Compute coastline
     dispGridCoastline(lon, lat, inProjData, land_mask[0,:,:], 1.25)
-    
-    # # Display colorbar
-    # ticks = np.linspace(norm.vmin, norm.vmax, 7, endpoint=True) # control nb of ticks for colorbar
-    # cbar = plt.colorbar(map1, ticks=ticks, orientation='horizontal', extend='both')
-    # cbar.ax.set_title(cbar_title,size=cbar_label_size)
-    # cbar.ax.tick_params(labelsize=cbar_tick_size)   
-    
-    # if norm is not None and len(np.unique(np.round(np.diff(norm.boundaries),2))) != 1:
-    #     plt.text(0.5,-0.1,'Warning: Adaptative colormap (non-linear) !',horizontalalignment='center',
-    #              verticalalignment='center', transform = ax.transAxes, fontsize=16, color='r', weight='bold') 
         
     # Display colorbar
     if cbar_title is not None:
@@ -258,14 +328,6 @@ def plotMappingLev(lon, lat, var2plot, cbar_title, depth, land_mask, inProjData,
         #                  land_mask, 1.25)
         
         plt.title(f'{"{:.0f}".format(depth[k*2])} m')
-        
-    # cbar_ax = fig.add_axes([0.16, 0.01, 0.7, 0.04]) # list [x0, y0, width, height]
-    
-    # ticks = np.linspace(norm.vmin, norm.vmax, 7, endpoint=True) # control nb of ticks for colorbar
-    # cbar = fig.colorbar(map1, cax=cbar_ax, ticks=ticks, orientation='horizontal',extend='both')
-    
-    # cbar.ax.set_title(cbar_title,size=cbar_label_size)
-    # cbar.ax.tick_params(labelsize=cbar_tick_size)
     
     # Display colorbar
     if cbar_title is not None:
