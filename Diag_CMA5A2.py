@@ -40,6 +40,7 @@ Note: In order to run, this script will need the 'util' and 'Toolz'
 #                         --< LIBRARIES TO LOAD >--                           #
 #=============================================================================#
 import os
+import sys
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
@@ -56,7 +57,6 @@ from cartopy.mpl.geoaxes import GeoAxes
 GeoAxes._pcolormesh_patched = Axes.pcolormesh
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
-import sys
 
 # ignore warnings
 # import warnings
@@ -757,7 +757,6 @@ for ind_file in np.arange(0,length_loop):
     nbContourLines = 8 # nb of contour lines plotted
     #----------------------------------#     
         
-    # if ((ind_file == 0 or ind_file == 1) and create_pdf_diff =='y') or create_pdf_diff =='n':
     if ind_file!=2 or create_pdf_diff == 'n': 
         # Plot parameters for standard simu (not diff)
         #-----------------------------------------------------------------------------#
@@ -1477,7 +1476,7 @@ for ind_file in np.arange(0,length_loop):
             plotMapping(lonWindGrid, latWindGrid, precip_evap_mean, contour_precipevap, land_mask, 
                     projDataIn, projDataOut, cmap_precipevap, norm_precipevap, figTitleYear, figXsize, figYsize,
                     cbar_title_precipevap, cbar_label_size, cbar_tick_size, title_font_size)
-        else:
+        elif ind_file == 2 and create_pdf_diff == 'y': 
             rows = 2; cols = 1
             plotMappingSubPlots(rows, cols, lonWindGrid_S1, latWindGrid_S1, [precip_evap_mean_S1,precip_evap_mean_S2], contour_precipevap, [land_mask_S1,land_mask_S2],
                 projDataIn, projDataOut, cmap_precipevap, norm_precipevap, figTitleDiff, figXsize, figYsize,
@@ -1744,11 +1743,11 @@ for ind_file in np.arange(0,length_loop):
     # ZONAL AVERAGE STREAM FUNCTION
     #-----------------------------------------------------------------------------#
     if "zo_stream_function" in globals():
-        if ind_file!=2 or create_pdf_diff == 'n': 
+        if ind_file != 2 or create_pdf_diff == 'n': 
             plotZonalAve(latGrid, -1*depthGrid, zo_stream_function_mean, contour_zostrf, 
                         cmap_zostrf, norm_zostrf, figTitleYear, figXsize, figYsize, 
                         cbar_title_zostrf, cbar_label_size, cbar_tick_size, title_font_size, xy_label_font_size, xy_ticks_font_size)
-        else:
+        elif ind_file == 2 and create_pdf_diff == 'y': 
             rows = 2; cols = 1
             plotZonalAveSubPlots(rows, cols, latGrid, -1*depthGrid, [zo_stream_function_mean_S1,zo_stream_function_mean_S2], contour_zostrf, 
                                 cmap_zostrf, norm_zostrf, figTitleDiff, figXsize, figYsize, 
@@ -1788,11 +1787,11 @@ for ind_file in np.arange(0,length_loop):
     # BAROTROPIC STREAM FUNCTION
     #-----------------------------------------------------------------------------#
     if "baro_stream_function" in globals():
-        if ind_file!=2 or create_pdf_diff == 'n': 
+        if ind_file != 2 or create_pdf_diff == 'n': 
             plotMapping(lon, lat, baro_stream_function_mean, contour_bstrf, land_mask, 
                     projDataIn, projDataOut, cmap_bstrf, norm_bstrf, figTitleYear, figXsize, figYsize, 
                     cbar_title_bstrf, cbar_label_size, cbar_tick_size, title_font_size)
-        else:
+        elif ind_file == 2 and create_pdf_diff == 'y': 
             rows = 2; cols = 1
             plotMappingSubPlots(rows, cols, lon_S1, lat_S1, [baro_stream_function_mean_S1,baro_stream_function_mean_S2], contour_bstrf, [land_mask_S1,land_mask_S2],
                 projDataIn, projDataOut, cmap_bstrf, norm_bstrf, figTitleDiff, figXsize, figYsize,
@@ -2014,7 +2013,6 @@ for ind_file in np.arange(0,length_loop):
         # ZONAL AVERAGE PO4 SUBBASINS
         #-------------------------------------------------#
         if "zo_PO4_atlmsk" in globals() and "zo_PO4_pacmsk" in globals() and "zo_PO4_indmsk" in globals():
-            
             rows = 3; cols = 1
             plotZonalAveSubPlots(rows, cols, latGrid, -1*depthGrid, [zo_PO4_atlmsk_mean,zo_PO4_pacmsk_mean,zo_PO4_indmsk_mean], contour_zopo4, 
                                 cmap_zopo4, norm_zopo4, fig_title_subbasin, figXsize, figYsize, 
