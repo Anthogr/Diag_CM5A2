@@ -11,14 +11,14 @@
 # #      Grid_out = [ Z, lon_out, lat_out]
 # #
 # # Notice that Grid_in and Grid_out have the same 1st dimension: Z
-# # (it can be time or depth for example)
+# # (it can be time or depth for exemple)
 # #
 # # 2D interpolation will occur over 2nd and 3rd dimensions of the grid
 # # and this will be done for each element of the 1st dimension of the grid 
 # # to recreate 3D variable var_out
 # #------------------------------------------------------------------------------#
 
-def myCustomInterp3(lon_in,lat_in, var_in, lon_out, lat_out):
+def myCustomInterp2(lon_in,lat_in, var_in, lon_out, lat_out):
 
     # With scipy version on IRENE whene this was tested scipy.__version__ = 1.4.1
     # there is a strange behavior with masked array and scipy.interpolate.griddata
@@ -34,18 +34,25 @@ def myCustomInterp3(lon_in,lat_in, var_in, lon_out, lat_out):
     coord_in  = np.array([lon_in.flatten(),lat_in.flatten()]).T
     coord_out = np.array([lon_out.flatten(),lat_out.flatten()]).T
 
-    # var_out = np.ma.zeros(shape=(var_in.shape[0], lon_out.shape[0], lon_out.shape[1])) # Because of read above commentary
-    var_out = np.zeros(shape=(var_in.shape[0], lon_out.shape[0], lon_out.shape[1]))
-
     # Conversion of masked array with masked values into np.array with nan is performed
     var_in = np.where(var_in.mask == True, np.nan, var_in)
 
-    for ind in np.arange(0, var_in.shape[0]):
+    if len(var_in.shape)==3:
 
-        var_interp = griddata(coord_in, var_in[ind,::].flatten(), coord_out, method='nearest')
-        var_interp_reshaped   = var_interp.reshape(lon_out.shape)
+        # var_out = np.ma.zeros(shape=(var_in.shape[0], lon_out.shape[0], lon_out.shape[1])) # Because of read above commentary
+        var_out = np.zeros(shape=(var_in.shape[0], lon_out.shape[0], lon_out.shape[1]))
 
-        var_out[ind,::] = var_interp_reshaped
+        for ind in np.arange(0, var_in.shape[0]):
+
+            var_interp          = griddata(coord_in, var_in[ind,::].flatten(), coord_out, method='nearest')
+            var_interp_reshaped = var_interp.reshape(lon_out.shape)
+            var_out[ind,::]     = var_interp_reshaped
+
+    elif len(var_in.shape)==2:
+
+        var_out    = np.zeros(shape=(lon_out.shape[0], lon_out.shape[1]))
+        var_interp = griddata(coord_in, var_in.flatten(), coord_out, method='nearest')
+        var_out    = var_interp.reshape(lon_out.shape)
 
     # Conversion of np.array with nan into masked array with masked values
     var_out = np.ma.masked_where(np.isnan(var_out),var_out)
