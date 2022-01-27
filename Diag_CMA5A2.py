@@ -1489,7 +1489,7 @@ for ind_file in np.arange(0,length_loop):
         plt.savefig(pathFilename, format=fig_format, bbox_inches='tight', facecolor='white')
         if create_pdf == 'y':
             filecount += 1; lnfile = 'file' + str(filecount) + '.' + fig_format
-            os.system('ln -s ' + pathFilename + ' ' + lnfile)
+            os.system('ln -s ' + pathFilename + ' ' + profilePath + '/' + lnfile)
             savedfiles.append(filename)
 
         # GIF
