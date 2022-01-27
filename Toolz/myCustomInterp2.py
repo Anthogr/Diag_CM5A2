@@ -1,22 +1,22 @@
-# # -*- coding: utf-8 -*-
-# #------------------------------------------------------------------------------#
-# # Interpolate 3D variable (var_in) from grid_in to grid_out under format: 
-# #   var_in  [L x M x N ]
-# #   lon_in  [    M x N ]
-# #   lat_in  [    M x N ]
-# #   lon_out [    M'x N']
-# #   lat_out [    M'x N']
-# #
-# # With Grid_in  = [ Z, lon_in , lat_in ]
-# #      Grid_out = [ Z, lon_out, lat_out]
-# #
-# # Notice that Grid_in and Grid_out have the same 1st dimension: Z
-# # (it can be time or depth for exemple)
-# #
-# # 2D interpolation will occur over 2nd and 3rd dimensions of the grid
-# # and this will be done for each element of the 1st dimension of the grid 
-# # to recreate 3D variable var_out
-# #------------------------------------------------------------------------------#
+# -*- coding: utf-8 -*-
+#------------------------------------------------------------------------------#
+# Interpolate 3D variable (var_in) from grid_in to grid_out under format: 
+#   var_in  [L x M x N ]
+#   lon_in  [    M x N ]
+#   lat_in  [    M x N ]
+#   lon_out [    M'x N']
+#   lat_out [    M'x N']
+#
+# With Grid_in  = [ Z, lon_in , lat_in ]
+#      Grid_out = [ Z, lon_out, lat_out]
+#
+# Notice that Grid_in and Grid_out have the same 1st dimension: Z
+# (it can be time or depth for exemple)
+#
+# 2D interpolation will occur over 2nd and 3rd dimensions of the grid
+# and this will be done for each element of the 1st dimension of the grid 
+# to recreate 3D variable var_out
+#------------------------------------------------------------------------------#
 
 def myCustomInterp2(lon_in,lat_in, var_in, lon_out, lat_out):
 
