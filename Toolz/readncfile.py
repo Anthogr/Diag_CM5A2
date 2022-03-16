@@ -8,7 +8,8 @@ def readncfile(inpath, indic, mydata):
     #-----------------------------------------------#
     # For exemple if you entrered in a specific dictionnary a variable name like 
     # x = 'nav_lon' and it is actually 'NAV_LON' in the nc file the few line below 
-    # will change x = 'NAV_LON' so the variable will be found and loaded
+    # will allow to match the variable name anyway. Here dictKeysListLower contains 
+    # all the variable names in the nc file provided by inpath in lower case
     
     dictKeys     = f.variables.keys()
     dictKeysList = list(dictKeys)
