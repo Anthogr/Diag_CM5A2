@@ -120,7 +120,7 @@ subBasinFile = ["subbasins_rupelianTot.nc",
 # 'y' for manual, 'n' for automatic
 #---------------------------------------------------#
 manual_lim_bathy      = 'n'; min_lim_bathy      = 0; max_lim_bathy      = 100; step_bathy      = 1
-manual_lim_PrecipEvap = 'n'; min_lim_PrecipEvap = 0; max_lim_PrecipEvap = 100; step_PrecipEvap = 1
+manual_lim_precipevap = 'n'; min_lim_precipevap = 0; max_lim_precipevap = 100; step_precipevap = 1
 manual_lim_sss        = 'n'; min_lim_sss        = 0; max_lim_sss        = 100; step_sss        = 1
 manual_lim_zosalin    = 'n'; min_lim_zosalin    = 0; max_lim_zosalin    = 100; step_zosalin    = 1
 manual_lim_sst        = 'n'; min_lim_sst        = 0; max_lim_sst        = 100; step_sst        = 1
@@ -808,10 +808,15 @@ for ind_file in np.arange(0,length_loop):
             cmapColor_precipevap = 'RdBu_r' #gnuplot2
             cbar_title_precipevap = 'Precipitation - Evaporation (PRECIP, EVAP) (mm.d$^{-1}$)'
 
-            cmap_precipevap = mpl.cm.get_cmap(cmapColor_precipevap)
-            lim_precipevap  = np.round(np.max(np.abs((np.max(precip_evap_mean),np.min(precip_evap_mean)))))
-            bounds = np.linspace(-lim_precipevap,lim_precipevap,100)
-            norm_precipevap = mpl.colors.BoundaryNorm(bounds, cmap_precipevap.N)
+            if manual_lim_precipevap == 'n':
+                cmap_precipevap = mpl.cm.get_cmap(cmapColor_precipevap)
+                lim_precipevap  = np.round(np.max(np.abs((np.max(precip_evap_mean),np.min(precip_evap_mean)))))
+                bounds = np.linspace(-lim_precipevap,lim_precipevap,100)
+                norm_precipevap = mpl.colors.BoundaryNorm(bounds, cmap_precipevap.N)
+            elif manual_lim_precipevap == 'y' :
+                cmap_precipevap = mpl.cm.get_cmap(cmapColor_precipevap)
+                bounds          = np.arange(min_lim_precipevap, max_lim_precipevap, step_precipevap)
+                norm_precipevap = mpl.colors.BoundaryNorm(bounds, cmap_precipevap.N)
             
             # Contour
             intervContour = np.int32(len(norm_precipevap.boundaries)/nbContourLines)
