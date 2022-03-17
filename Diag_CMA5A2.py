@@ -1510,7 +1510,7 @@ for ind_file in np.arange(0,length_loop):
 
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
-                pathFilename = savedGifPath + ind + '.' + fig_format
+                pathFilename = savedGifPath + ind + '.png'
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
 
                 plt.close()
@@ -1550,7 +1550,7 @@ for ind_file in np.arange(0,length_loop):
 
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
-                pathFilename = savedGifPath + ind + '.' + fig_format
+                pathFilename = savedGifPath + ind + '.png'
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
 
                 plt.close()
@@ -1589,7 +1589,7 @@ for ind_file in np.arange(0,length_loop):
 
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
-                pathFilename = savedGifPath + ind + '.' + fig_format
+                pathFilename = savedGifPath + ind + '.png'
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
 
                 plt.close()
@@ -1647,7 +1647,7 @@ for ind_file in np.arange(0,length_loop):
 
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
-                pathFilename = savedGifPath + ind + '.' + fig_format
+                pathFilename = savedGifPath + ind + '.png'
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
 
                 plt.close()
@@ -1686,7 +1686,7 @@ for ind_file in np.arange(0,length_loop):
 
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
-                pathFilename = savedGifPath + ind + '.' + fig_format
+                pathFilename = savedGifPath + ind + '.png'
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
 
                 plt.close()
@@ -1780,7 +1780,7 @@ for ind_file in np.arange(0,length_loop):
 
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
-                pathFilename = savedGifPath + ind + '.' + fig_format
+                pathFilename = savedGifPath + ind + '.png'
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
 
                 plt.close()
@@ -1825,7 +1825,7 @@ for ind_file in np.arange(0,length_loop):
 
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
-                pathFilename = savedGifPath + ind + '.' + fig_format
+                pathFilename = savedGifPath + ind + '.png'
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
 
                 plt.close()
@@ -1907,7 +1907,7 @@ for ind_file in np.arange(0,length_loop):
 
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
-                pathFilename = savedGifPath + ind + '.' + fig_format
+                pathFilename = savedGifPath + ind + '.png'
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
 
                 plt.close()
@@ -1947,7 +1947,7 @@ for ind_file in np.arange(0,length_loop):
 
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
-                pathFilename = savedGifPath + ind + '.' + fig_format
+                pathFilename = savedGifPath + ind + '.png'
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
 
                 plt.close()
@@ -2006,7 +2006,7 @@ for ind_file in np.arange(0,length_loop):
 
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
-                pathFilename = savedGifPath + ind + '.' + fig_format
+                pathFilename = savedGifPath + ind + '.png'
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
 
                 plt.close()
@@ -2082,7 +2082,7 @@ for ind_file in np.arange(0,length_loop):
 
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
-                pathFilename = savedGifPath + ind + '.' + fig_format
+                pathFilename = savedGifPath + ind + '.png'
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
 
                 plt.close()
@@ -2162,7 +2162,7 @@ for ind_file in np.arange(0,length_loop):
 
                 # Save figure
                 ind = str(ind); ind = ind.zfill(2) # add 0 when ind is 1 digit long (1 => 01)
-                pathFilename = savedGifPath + ind + '.' + fig_format
+                pathFilename = savedGifPath + ind + '.png'
                 plt.savefig(pathFilename, bbox_inches='tight', facecolor='white')
 
                 plt.close()
