@@ -58,6 +58,17 @@ def z_masked_overlap(axe, X, Y, Z, source_projection=None):
             np.isnan(diagonal1_lengths)
         )
 
+        # Added to prevent plotting bugs happening with some
+        # simulation outputs where border values (around -180°/180°)
+        # are not properly masked. The masked band in to_mask var
+        # is enlarged by on cell on the left and one cell on the right
+        #---------------------------------------------------------#
+        to_mask_true = np.where(to_mask == True)
+        for i in np.arange(0, len(to_mask_true[0])):
+            to_mask[to_mask_true[0][i], to_mask_true[1][i]-1] = True
+            to_mask[to_mask_true[0][i], to_mask_true[1][i]+1] = True
+        #---------------------------------------------------------#
+
         # TODO check if we need to do something about surrounding vertices
 
         # add one extra colum and row for contour and contourf
