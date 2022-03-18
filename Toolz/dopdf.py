@@ -57,7 +57,7 @@ def dopdf(pathPdf, savedfilesdata, prefixdata, filecountdata, namedata, sentence
     os.remove("summary.aux")
     os.remove("summary.lof")
     os.remove("summary.log")
-    os.system("rm -rf " + prefixdata + "*.png")
+    os.system("rm -rf " + prefixdata + "*")
     os.system("rm -rf texput*")
     os.system("mv summary.pdf " + pathPdf + documentname)
     os.remove("summary.tex")
