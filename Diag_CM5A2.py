@@ -6,7 +6,7 @@ Created on Mon Oct 11 14:34:22 2021
 
 @author: anthog
 
-This script plots several diagnostics from CMA5A2 outputs.
+This script plots several diagnostics from CM5A2 outputs.
 Depending on the options enabled:
 
     - Figures format can be set (png, pdf...)
@@ -82,7 +82,7 @@ timeInterv = 250
 
 # files you want to be loaded and their path location
 #---------------------------------------------------#
-# dataDirPath  = ["/Users/anthony/Documents/Model/Data_CMA5A2/"]
+# dataDirPath  = ["/Users/anthony/Documents/Model/Data_CM5A2/"]
 # 
 # filePrefix   = ["C30MaTotV1-3X_SE_4805_4854_1M"] # [filePrefix]_grid_[X].nc with [X] = T, U, V or W
 # 
@@ -92,8 +92,8 @@ timeInterv = 250
 # 
 # subBasinFile = ["subbasins_rupelianTot.nc"]
 
-# dataDirPath  = ["/Users/anthony/Documents/Model/Data_CMA5A2/",
-#                 "/Users/anthony/Documents/Model/Data_CMA5A2/CTRL/"]
+# dataDirPath  = ["/Users/anthony/Documents/Model/Data_CM5A2/",
+#                 "/Users/anthony/Documents/Model/Data_CM5A2/CTRL/"]
 # filePrefix   = ["C30MaTotV1-3X_SE_4805_4854_1M", 
 #                 "NORIVER-00_SE_2000_2009_1M"] # [filePrefix]_grid_[X].nc with [X] = T, U, V or W
 # maskFile     = ["C30MaTMP_mesh_mask.nc", 
@@ -104,8 +104,8 @@ timeInterv = 250
 # subBasinFile = ["subbasins_rupelianTot.nc", 
 #                 ""]
 
-dataDirPath  = ["/Users/anthony/Documents/Model/Data_CMA5A2/",
-                "/Users/anthony/Documents/Model/Data_CMA5A2/"]
+dataDirPath  = ["/Users/anthony/Documents/Model/Data_CM5A2/",
+                "/Users/anthony/Documents/Model/Data_CM5A2/"]
 filePrefix   = ["C30MaTotV1-3X_SE_4805_4854_1M", 
                 "C30MaTotV1-3X_SE_2705_2754_1M"] # [filePrefix]_grid_[X].nc with [X] = T, U, V or W
 maskFile     = ["C30MaTMP_mesh_mask.nc", 
