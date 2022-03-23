@@ -6,7 +6,7 @@ Created on Mon Oct 11 14:34:22 2021
 
 @author: anthog
 
-This script plots several diagnostics from CMA5A2 outputs.
+This script plots several diagnostics from CM5A2 outputs.
 Depending on the options enabled:
 
     - Figures format can be set (png, pdf...)
@@ -89,7 +89,7 @@ from Toolz import (z_masked_overlap, readncfile, dopdf, dispGridCoastline,
 #   - If profile name entered already exists, the script will use the related 
 #     userName_profile.py file and run the script
 
-print('\n\n\n================================< Diag_CMA5A2 >================================')
+print('\n\n\n================================< Diag_CM5A2 >================================')
 
 # Initialization
 #------------------------------------------------------#
