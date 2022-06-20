@@ -1039,7 +1039,7 @@ for ind_file in np.arange(0,length_loop):
 
         if "PO4" in globals():
 
-            cbar_title_po4   = 'Phosphate Concentration (PO4) (µmol.m$^{-3}$)'
+            cbar_title_po4   = 'Phosphate Concentration (PO4) (mmol.m$^{-3}$)'
             
             # Automatic or manual colormap limits PO4
             if manual_lim_po4 == 'n':
@@ -1051,7 +1051,7 @@ for ind_file in np.arange(0,length_loop):
 
         if "zo_PO4" in globals():
             
-            cbar_title_zopo4 = 'Zonal Phosphate Concentration (PO4) (µmol.m$^{-3}$)'
+            cbar_title_zopo4 = 'Zonal Phosphate Concentration (PO4) (mmol.m$^{-3}$)'
                     
             # Automatic or manual colormap limits zonal PO4
             if manual_lim_zopo4 == 'n':
@@ -1070,7 +1070,7 @@ for ind_file in np.arange(0,length_loop):
 
         if "NO3" in globals():
 
-            cbar_title_no3   = 'Nitrate Concentration (NO3) (µmol.m$^{-3}$)'
+            cbar_title_no3   = 'Nitrate Concentration (NO3) (mmol.m$^{-3}$)'
             
             # Automatic or manual colormap limits NO3
             if manual_lim_no3 == 'n':
@@ -1082,7 +1082,7 @@ for ind_file in np.arange(0,length_loop):
 
         if "zo_NO3" in globals():
             
-            cbar_title_zono3 = 'Zonal Nitrate Concentration (NO3) (µmol.m$^{-3}$)'
+            cbar_title_zono3 = 'Zonal Nitrate Concentration (NO3) (mmol.m$^{-3}$)'
 
             # Automatic or manual colormap limits zonal NO3
             if manual_lim_zono3 == 'n':
@@ -1101,7 +1101,7 @@ for ind_file in np.arange(0,length_loop):
 
         if "O2" in globals():
 
-            cbar_title_o2   = 'Oxygen Concentration (O2) (µmol.m$^{-3}$)'
+            cbar_title_o2   = 'Oxygen Concentration (O2) (mmol.m$^{-3}$)'
             
             # Automatic or manual colormap limits O2
             if manual_lim_o2 == 'n':
@@ -1113,7 +1113,7 @@ for ind_file in np.arange(0,length_loop):
 
         if "zo_O2" in globals():
             
-            cbar_title_zoo2 = 'Zonal Oxygen Concentration (O2) (µmol.m$^{-3}$)'
+            cbar_title_zoo2 = 'Zonal Oxygen Concentration (O2) (mmol.m$^{-3}$)'
 
             # Automatic or manual colormap limits zonal O2
             if manual_lim_zoo2 == 'n':
@@ -1329,7 +1329,7 @@ for ind_file in np.arange(0,length_loop):
         
         if "zo_PO4" in globals():
             
-            cbar_title_zopo4 = 'Zonal Phosphate Concentration (PO4) (µmol.m$^{-3}$)' + cBarTitleDiff
+            cbar_title_zopo4 = 'Zonal Phosphate Concentration (PO4) (mmol.m$^{-3}$)' + cBarTitleDiff
 
             cmap_zopo4 = mpl.cm.get_cmap(cmapColor_po4no3o2)
             lim_zopo4  = np.round(np.max(np.abs((np.max(zo_PO4_mean),np.min(zo_PO4_mean)))),2)
@@ -1343,7 +1343,7 @@ for ind_file in np.arange(0,length_loop):
                 
         if "zo_NO3" in globals():
             
-            cbar_title_zono3 = 'Zonal Nitrate Concentration (NO3) (µmol.m$^{-3}$)' + cBarTitleDiff
+            cbar_title_zono3 = 'Zonal Nitrate Concentration (NO3) (mmol.m$^{-3}$)' + cBarTitleDiff
             
             cmap_zono3 = mpl.cm.get_cmap(cmapColor_po4no3o2)
             lim_zono3  = np.round(np.max(np.abs((np.max(zo_NO3_mean),np.min(zo_NO3_mean)))),2)
@@ -1356,7 +1356,7 @@ for ind_file in np.arange(0,length_loop):
                 
         if "zo_O2" in globals():
             
-            cbar_title_zoo2 = 'Zonal Oxygen Concentration (O2) (µmol.m$^{-3}$)' + cBarTitleDiff
+            cbar_title_zoo2 = 'Zonal Oxygen Concentration (O2) (mmol.m$^{-3}$)' + cBarTitleDiff
             
             cmap_zoo2 = mpl.cm.get_cmap(cmapColor_po4no3o2)
             lim_zoo2  = np.round(np.max(np.abs((np.max(zo_O2_mean),np.min(zo_O2_mean)))),2)
