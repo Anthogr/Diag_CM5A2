@@ -696,7 +696,7 @@ for ind_file in np.arange(0,length_loop):
 
             # puts 0 instead of masked value in vosocrtx
             vozocrtx = np.where(vozocrtx.mask==True,0,vozocrtx)   
-                                    
+
             # Zonal volume flux"/UNITS="m3/s" 
             f_m_x = vozocrtx * e3u_0 * e2u
             
@@ -709,9 +709,9 @@ for ind_file in np.arange(0,length_loop):
             
             # Arbitrarily fixes a point where BSF=0. Here : eurasia, for ORCA2
             bsf_ref = np.sum(f_m_x_z[:,0:139,19],axis=1)*1E-6
-                                        
+
             # Expand vector bsf_ref (12) into a matrix bsf_ref_mat (12x149x182) so bsf 
-            # calcualtion works (each element of bsf_ref is repeated over a matrix 149x182)
+            # calculation works (each element of bsf_ref is repeated over a matrix 149x182)
             bsf_ref_mat = np.expand_dims(np.expand_dims(bsf_ref, axis=1),axis=2) # expand dimensions so bsf_ref_mat is 12x1x1
             bsf_ref_mat = np.repeat(np.repeat(bsf_ref_mat,lon.shape[0],axis=1),lon.shape[1],axis=2)
             
