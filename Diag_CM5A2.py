@@ -603,10 +603,10 @@ for ind_file in np.arange(0,length_loop):
             # Lat grid is not regular, we need to to compute zonal mean
             # For this, we take variable zo_lat as a guide
             #-------------------------------#
-            for j in np.arange(0,149): 
+            for j in np.arange(0, lat.shape[0]):
                 
                 # limits
-                if j < 148:
+                if j < lat.shape[0]-1:
                     limit_inf = zo_lat[j] - (zo_lat[j]   - zo_lat[j-1]) /2
                     limit_sup = zo_lat[j] + (zo_lat[j+1] - zo_lat[j])   /2
                 else:
