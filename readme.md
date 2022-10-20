@@ -2,7 +2,7 @@
 
 For more information about launching the script on IRENE, check out the __IRENE_GEN2212__ branch.
 
-_Based on the [Alexandre Phol's work](https://github.com/alexpohl/genie_basicdiags)_
+_Based on the [Alexandre Phol's work](https://github.com/Paleoclim-CNRS/genie_basicdiags)_
 
 The scripts and functions have been reworked to match the CM5A2 model's outputs
 
