@@ -6,3 +6,12 @@
 _Based on the [Alexandre Phol's work](https://github.com/Paleoclim-CNRS/genie_basicdiags)_
 
 The scripts and functions have been reworked to match the CM5A2 model's outputs
+
+---
+
+## Usage
+
+Run remotely (IRENE):
+- Load environment `. load_env.sh`
+- Run python script `python3 Diag_CM5A2.py`
+- Follow instructions (more informations at the top of the script `Diag_CM5A2.py`)
