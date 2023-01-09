@@ -20,12 +20,12 @@ Depending on the options enabled:
 - Launch the script by running the RUN_DIAG.sh file (command 'sh RUN_DIAG.sh')
 
 - Enter your [ProfileName] as requested
-    - if [ProfileName] is not known: a folder [ProfileName] located in userData/
+    - if [ProfileName] is not known: a folder [ProfileName] located in user_input/
       containing a [ProfileName]_profile.py will be created and program will stop.
       At this point, you will need to edit the [ProfileName]_profile.py file 
       according to your needs and relaunch the program
     - if [ProfileName] is known: program will run following the settings of the
-      userData/[ProfileName]/[ProfileName]_profile.py file
+      user_input/[ProfileName]/[ProfileName]_profile.py file
 
     Note that the variables in [ProfileName]_profile.py file: 
         - filePrefix
@@ -84,7 +84,7 @@ from Toolz import (z_masked_overlap, readncfile, dopdf, dispGridCoastline,
 #     containing all the user related data i.e:
 #       * userName_profile.py containing the initialization variables
 #       * Folders FIG/PDF/GIF that will contain the script outputs
-#     Those are created in userData/UserName folder
+#     Those are created in user_input/UserName folder
 #
 #   - If profile name entered already exists, the script will use the related 
 #     userName_profile.py file and run the script
@@ -99,7 +99,7 @@ promptProfile = f"""Enter your profile name:
 profileName   = input(promptProfile)
 
 # Extract path name that will contain all the user related data
-profilePath = os.getcwd() + '/userData/' + profileName
+profilePath = os.getcwd() + '/user_input/' + profileName
 
 str_created_profile = f"""\n-------------------------------------
 Profile {profileName} has been created\n
@@ -119,14 +119,14 @@ if os.system('[ ! -d "' + profilePath + '" ]') == 0:
 
     if create_profile == 'y':
         os.system('mkdir ' + profilePath)
-        copyfile('defaultProfile.py', f'userData/{profileName}/{profileName}_profile.py') 
+        copyfile('defaultProfile.py', f'user_input/{profileName}/{profileName}_profile.py') 
         sys.exit(str_created_profile)
     elif create_profile == 'n':
         sys.exit('\nProgram ended\n===============================================================================')
 
 # And if folder and profileName_profile.py exist: load variables in profileName_profile.py
 elif os.system('[ -f "' + profilePath + f'/{profileName}_profile.py' + '" ]') == 0:
-    varModule = importlib.import_module(f'userData.{profileName}.{profileName}_profile')
+    varModule = importlib.import_module(f'user_input.{profileName}.{profileName}_profile')
     for varname, val in varModule.__dict__.items():
         if (varname.startswith('__') and varname.endswith('__'))==False : # get the negation of the expression between parentethis
             exec(varname + " = varModule." + varname)
@@ -141,7 +141,7 @@ else:
 if not len(sentence_to_use) == len(dataDirOutput) == len(filePrefix) == len(dataDirMask) == len(maskFile) == len(dataDirBathy) == len(bathyFile) == len(subBasinFile):
     err_str = f"""\n     /!\ Warning: Lengths of list variables are not equal /!\\
 ------------------------------------------------------------------
-Check in userData/{profileName}/{profileName}_profile.py:
+Check in user_input/{profileName}/{profileName}_profile.py:
 - sentence_to_use - dataDirOutput - filePrefix - dataDirMask
 - maskFile - dataDirBathy - bathyFile - subBasinFile
 Remember you can add a str element to a list variable and leave it
@@ -603,14 +603,16 @@ for ind_file in np.arange(0,length_loop):
             # Lat grid is not regular, we need to to compute zonal mean
             # For this, we take variable zo_lat as a guide
             #-------------------------------#
-            for j in np.arange(0, lat.shape[0]):
-                
+            for j in np.arange(0, len(zo_lat)):
                 # limits
-                if j < lat.shape[0]-1:
-                    limit_inf = zo_lat[j] - (zo_lat[j]   - zo_lat[j-1]) /2
-                    limit_sup = zo_lat[j] + (zo_lat[j+1] - zo_lat[j])   /2
-                else:
-                    limit_inf = zo_lat[j] - (zo_lat[j]   - zo_lat[j-1]) /2
+                if j == 0:
+                    limit_inf = zo_lat[j] - 1
+                    limit_sup = zo_lat[j] + (zo_lat[j+1] - zo_lat[j]) / 2
+                elif j > 0 and j < len(zo_lat)-1:
+                    limit_inf = zo_lat[j] - (zo_lat[j] - zo_lat[j-1]) / 2
+                    limit_sup = zo_lat[j] + (zo_lat[j+1] - zo_lat[j]) / 2
+                elif j == len(zo_lat)-1:
+                    limit_inf = zo_lat[j] - (zo_lat[j] - zo_lat[j-1]) / 2
                     limit_sup = zo_lat[j] + 1
                 
                 ind = np.where(np.logical_and(lat >= limit_inf, lat <= limit_sup))
@@ -2197,7 +2199,7 @@ for ind_file in np.arange(0,length_loop):
 
     if create_pdf == 'y':
 
-        dopdf(savedPdfPath, savedfiles, f'userData/{profileName}/file', filecount, filePrefix[ind_file], sentence_to_use[ind_file])
+        dopdf(savedPdfPath, savedfiles, f'user_input/{profileName}/file', filecount, filePrefix[ind_file], sentence_to_use[ind_file])
 
     #%%===========================================================================#
     #                            --< DIFF COMPUTATION >--                         #
