@@ -455,7 +455,7 @@ for ind_file in np.arange(0,length_loop):
 
         # Wind 850 hPa
         if "u850" in globals() and "v850" in globals() and "z850" in globals() and "lonWind" in globals() and "latWind" in globals():           
-            u850_mean = np.mean(u850,axis=0) 
+            u850_mean = np.mean(u850,axis=0)
             v850_mean = np.mean(v850,axis=0)
             z850_mean = np.mean(z850,axis=0)
             
@@ -468,6 +468,7 @@ for ind_file in np.arange(0,length_loop):
             # unit is in kg.s-1.m-2 
             # *0.001 => m3.s-1.m-2 <=> m.s-1 (because 1kg = 0.001m3)
             # *1000*86400 => mm.d-1
+            # => *0.001*1000*86400 <=> *86400
             precip = precip  * 86400 # kg.s-1.m-2 => mm.d-1 
             evap   = evap  * 86400
 
@@ -790,6 +791,8 @@ for ind_file in np.arange(0,length_loop):
                 norm_bathy = mpl.colors.BoundaryNorm(bounds, cmap_bathy.N)
                 # norm_bathy = mpl.colors.Normalize(vmin=bathy.min(), vmax=bathy.max())
             elif manual_lim_bathy == 'y':
+                if (max_lim_bathy - min_lim_bathy)/step_bathy > 256:
+                    step_bathy = np.ceil((max_lim_bathy - min_lim_bathy) / 256)
                 cmap_bathy = mpl.cm.get_cmap(cmapColor_bathy)
                 bounds     = np.arange(min_lim_bathy ,max_lim_bathy ,step_bathy)
                 norm_bathy = mpl.colors.BoundaryNorm(bounds, cmap_bathy.N)
@@ -821,6 +824,8 @@ for ind_file in np.arange(0,length_loop):
                 bounds = np.linspace(-lim_precipevap,lim_precipevap,100)
                 norm_precipevap = mpl.colors.BoundaryNorm(bounds, cmap_precipevap.N)
             elif manual_lim_precipevap == 'y' :
+                if (max_lim_precipevap - min_lim_precipevap)/step_precipevaptep > 256:
+                    step_precipevaptep = np.ceil((max_lim_precipevap - min_lim_precipevap) / 256)
                 cmap_precipevap = mpl.cm.get_cmap(cmapColor_precipevap)
                 bounds          = np.arange(min_lim_precipevap, max_lim_precipevap, step_precipevap)
                 norm_precipevap = mpl.colors.BoundaryNorm(bounds, cmap_precipevap.N)
@@ -842,6 +847,8 @@ for ind_file in np.arange(0,length_loop):
             if manual_lim_sss  == 'n':        
                 cmap_sss, norm_sss = adaptativeColorMap(SSS_mean, 0.015, 0.2, cmapColor_salinity)
             elif manual_lim_sss == 'y':
+                if (max_lim_sss - min_lim_sss)/step_sss > 256:
+                    step_sss = np.ceil((max_lim_sss - min_lim_sss) / 256)
                 cmap_sss = mpl.cm.get_cmap(cmapColor_salinity)
                 bounds   = np.arange(min_lim_sss ,max_lim_sss ,step_sss)
                 norm_sss = mpl.colors.BoundaryNorm(bounds, cmap_sss.N)
@@ -861,6 +868,8 @@ for ind_file in np.arange(0,length_loop):
             if manual_lim_zosalin  == 'n':        
                 cmap_zosalin, norm_zosalin = adaptativeColorMap(zo_salinity_mean, 0.015, 0.2, cmapColor_salinity)
             elif manual_lim_zosalin == 'y':
+                if (max_lim_zosalin - min_lim_zosalin)/step_zosalin > 256:
+                    step_zosalin = np.ceil((max_lim_zosalin - min_lim_zosalin) / 256)
                 cmap_zosalin = mpl.cm.get_cmap(cmapColor_salinity)
                 bounds       = np.arange(min_lim_zosalin ,max_lim_zosalin ,step_zosalin)
                 norm_zosalin = mpl.colors.BoundaryNorm(bounds, cmap_zosalin.N)
@@ -884,6 +893,8 @@ for ind_file in np.arange(0,length_loop):
             if manual_lim_sst  == 'n':        
                 cmap_sst, norm_sst = adaptativeColorMap(SST_mean, 0.015, 0.2, cmapColor_temp)
             elif manual_lim_sst == 'y':
+                if (max_lim_sst - min_lim_sst)/step_sst > 256:
+                    step_sst = np.ceil((max_lim_sst - min_lim_sst) / 256)
                 cmap_sst = mpl.cm.get_cmap(cmapColor_temp)
                 bounds   = np.arange(min_lim_sst ,max_lim_sst ,step_sst)
                 norm_sst = mpl.colors.BoundaryNorm(bounds, cmap_sst.N)
@@ -903,6 +914,8 @@ for ind_file in np.arange(0,length_loop):
             if manual_lim_zotemp  == 'n':        
                 cmap_zotemp, norm_zotemp = adaptativeColorMap(zo_temp_mean, 0.015, 0.2, cmapColor_temp)
             elif manual_lim_zotemp == 'y':
+                if (max_lim_zotemp - min_lim_zotemp)/step_zotemp > 256:
+                    step_zotemp = np.ceil((max_lim_zotemp - min_lim_zotemp) / 256)
                 cmap_zotemp = mpl.cm.get_cmap(cmapColor_temp)
                 bounds      = np.arange(min_lim_zotemp ,max_lim_zotemp ,step_zotemp)
                 norm_zotemp = mpl.colors.BoundaryNorm(bounds, cmap_zotemp.N)
@@ -958,6 +971,8 @@ for ind_file in np.arange(0,length_loop):
             if manual_lim_omlnh  == 'n':        
                 cmap_omlnh, norm_omlnh = adaptativeColorMap(omlmaxNH, 0.015, 0.2, cmapColor_oml)
             elif manual_lim_omlnh == 'y':
+                if (max_lim_omlnh - min_lim_omlnh)/step_omlnh > 256:
+                    step_omlnh = np.ceil((max_lim_omlnh - min_lim_omlnh) / 256)
                 cmap_omlnh = mpl.cm.get_cmap(cmapColor_oml)
                 bounds     = np.arange(min_lim_omlnh ,max_lim_omlnh ,step_omlnh)
                 norm_omlnh = mpl.colors.BoundaryNorm(bounds, cmap_omlnh.N)
@@ -976,6 +991,8 @@ for ind_file in np.arange(0,length_loop):
             if manual_lim_omlsh  == 'n':        
                 cmap_omlsh, norm_omlsh = adaptativeColorMap(omlmaxSH, 0.015, 0.2, cmapColor_oml)
             elif manual_lim_omlsh == 'y':
+                if (max_lim_omlsh - min_lim_omlsh)/step_omlsh > 256:
+                    step_omlsh = np.ceil((max_lim_omlsh - min_lim_omlsh) / 256)
                 cmap_omlsh = mpl.cm.get_cmap(cmapColor_oml)
                 bounds     = np.arange(min_lim_omlsh ,max_lim_omlsh ,step_omlsh)
                 norm_omlsh = mpl.colors.BoundaryNorm(bounds, cmap_omlsh.N)
@@ -1001,7 +1018,9 @@ for ind_file in np.arange(0,length_loop):
                 # cmap_intpp = cmapColor_epctpp
                 # norm_intpp = None
                 cmap_intpp, norm_intpp = adaptativeColorMap(INTPP, 0.015, 0.2, cmapColor_epctpp)
-            elif manual_lim_epc100 == 'y':
+            elif manual_lim_intpp == 'y':
+                if (max_lim_intpp - min_lim_intpp)/step_intpp > 256:
+                    step_intpp = np.ceil((max_lim_intpp - min_lim_intpp) / 256)
                 cmap_intpp = mpl.cm.get_cmap(cmapColor_epctpp)
                 bounds     = np.arange(min_lim_intpp ,max_lim_intpp ,step_intpp)
                 norm_intpp = mpl.colors.BoundaryNorm(bounds, cmap_intpp.N)
@@ -1023,6 +1042,8 @@ for ind_file in np.arange(0,length_loop):
                 # norm_epc100 = None
                 cmap_epc100, norm_epc100 = adaptativeColorMap(EPC100, 0.015, 0.2, cmapColor_epctpp)
             elif manual_lim_epc100 == 'y':
+                if (max_lim_epc100 - min_lim_epc100)/step_epc100 > 256:
+                    step_epc100 = np.ceil((max_lim_epc100 - min_lim_epc100) / 256)
                 cmap_epc100 = mpl.cm.get_cmap(cmapColor_epctpp)
                 bounds      = np.arange(min_lim_epc100, max_lim_epc100, step_epc100)
                 norm_epc100 = mpl.colors.BoundaryNorm(bounds, cmap_epc100.N)
@@ -1047,6 +1068,8 @@ for ind_file in np.arange(0,length_loop):
             if manual_lim_po4 == 'n':
                 cmap_po4, norm_po4 = adaptativeColorMap(PO4_mean, 0.015, 0.2, cmapColor_po4no3o2)
             elif manual_lim_po4 == 'y':
+                if (max_lim_po4 - min_lim_po4)/step_po4 > 256:
+                    step_po4 = np.ceil((max_lim_po4 - min_lim_po4) / 256)
                 cmap_po4 = mpl.cm.get_cmap(cmapColor_po4no3o2)
                 bounds   = np.arange(min_lim_po4, max_lim_po4, step_po4)
                 norm_po4 = mpl.colors.BoundaryNorm(bounds, cmap_po4.N)
@@ -1059,6 +1082,8 @@ for ind_file in np.arange(0,length_loop):
             if manual_lim_zopo4 == 'n':
                 cmap_zopo4, norm_zopo4 = adaptativeColorMap(zo_PO4_mean, 0.015, 0.2, cmapColor_po4no3o2)
             elif manual_lim_zopo4 == 'y':
+                if (max_lim_zopo4 - min_lim_zopo4)/step_zopo4 > 256:
+                    step_zopo4 = np.ceil((max_lim_zopo4 - min_lim_zopo4) / 256)
                 cmap_zopo4 = mpl.cm.get_cmap(cmapColor_po4no3o2)
                 bounds     = np.arange(min_lim_zopo4, max_lim_zopo4,step_zopo4)
                 norm_zopo4 = mpl.colors.BoundaryNorm(bounds, cmap_zopo4.N)
@@ -1078,6 +1103,8 @@ for ind_file in np.arange(0,length_loop):
             if manual_lim_no3 == 'n':
                 cmap_no3, norm_no3 = adaptativeColorMap(NO3_mean, 0.015, 0.2, cmapColor_po4no3o2)
             elif manual_lim_no3 == 'y':
+                if (max_lim_no3 - min_lim_no3)/step_no3 > 256:
+                    step_no3 = np.ceil((max_lim_no3 - min_lim_no3) / 256)
                 cmap_no3 = mpl.cm.get_cmap(cmapColor_po4no3o2)
                 bounds   = np.arange(min_lim_no3,max_lim_no3,step_no3)
                 norm_no3 = mpl.colors.BoundaryNorm(bounds, cmap_no3.N)
@@ -1090,6 +1117,8 @@ for ind_file in np.arange(0,length_loop):
             if manual_lim_zono3 == 'n':
                 cmap_zono3, norm_zono3 = adaptativeColorMap(zo_NO3_mean, 0.015, 0.2, cmapColor_po4no3o2)
             elif manual_lim_zono3 == 'y':
+                if (max_lim_zono3 - min_lim_zono3)/step_zono3 > 256:
+                    step_zono3 = np.ceil((max_lim_zono3 - min_lim_zono3) / 256)
                 cmap_zono3 = mpl.cm.get_cmap(cmapColor_po4no3o2)
                 bounds     = np.arange(min_lim_zono3,max_lim_zono3,step_zono3)
                 norm_zono3 = mpl.colors.BoundaryNorm(bounds, cmap_zono3.N)
@@ -1109,6 +1138,8 @@ for ind_file in np.arange(0,length_loop):
             if manual_lim_o2 == 'n':
                 cmap_o2, norm_o2 = adaptativeColorMap(O2_mean, 0.015, 0.2, cmapColor_po4no3o2)
             elif manual_lim_o2 == 'y':
+                if (max_lim_o2 - min_lim_o2)/step_o2 > 256:
+                    step_o2 = np.ceil((max_lim_o2 - min_lim_o2) / 256)
                 cmap_o2 = mpl.cm.get_cmap(cmapColor_po4no3o2)
                 bounds  = np.arange(min_lim_o2,max_lim_o2,step_o2)
                 norm_o2 = mpl.colors.BoundaryNorm(bounds, cmap_o2.N)
@@ -1121,6 +1152,8 @@ for ind_file in np.arange(0,length_loop):
             if manual_lim_zoo2 == 'n':
                 cmap_zoo2, norm_zoo2 = adaptativeColorMap(zo_O2_mean, 0.015, 0.2, cmapColor_po4no3o2)
             elif manual_lim_zoo2 == 'y':
+                if (max_lim_zoo2 - min_lim_zoo2)/step_zoo2 > 256:
+                    step_zoo2 = np.ceil((max_lim_zoo2 - min_lim_zoo2) / 256)
                 cmap_zoo2 = mpl.cm.get_cmap(cmapColor_po4no3o2)
                 bounds    = np.arange(min_lim_zoo2,max_lim_zoo2,step_zoo2)
                 norm_zoo2 = mpl.colors.BoundaryNorm(bounds, cmap_zoo2.N)
