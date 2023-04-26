@@ -47,6 +47,8 @@ Note: In order to run, this script will need the 'util' and 'Toolz'
 #                         --< LIBRARIES TO LOAD >--                           #
 #=============================================================================#
 import os
+proj_lib = "/ccc/products/python3-3.8.10/system/default/install_tree/proj/8.2.1/sc374czmeqpto7aytt4ogsgchxkjptiv/share/proj"
+os.environ["PROJ_LIB"] = proj_lib # added to avoid python 3.8 "UserWarning: Valid PROJ data directory not found." on IRENE
 import sys
 import matplotlib as mpl
 import matplotlib.pyplot as plt
