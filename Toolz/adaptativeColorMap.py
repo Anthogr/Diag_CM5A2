@@ -28,7 +28,7 @@ Inputs:
                   All bins with a p1 < pn < p2 will get more levels in colormap
                   All bins with a pn > p2 will get even more levels in colormap                   
     - cmapColor : Color of the Colormap ('viridis', 'magma', etc...)
- 
+
     
 Outputs:
     
@@ -54,23 +54,16 @@ def adaptativeColorMap(var, p1, p2, cmapColor):
     if prob.max()-prob.mean() > 0.2:
         # Adaptative colormap (the more data available in a bin, 
         # the more increments will be generated implemented in this bin)
-        lvl=[]
+        lvl = []
         
         for i in np.arange(0,len(n)):
-        
             if n[i] * np.diff(bins)[i]< p1: # probability of bin n°i
-                
-                lvl=np.append(lvl,np.linspace(bins[i],bins[i+1],2))[0:-1]
-            
+                lvl = np.append(lvl,np.linspace(bins[i],bins[i+1],2))[0:-1]
             elif (p1 < n[i] * np.diff(bins)[i]) & (n[i] * np.diff(bins)[i]< p2):
-                
-                lvl=np.append(lvl,np.linspace(bins[i],bins[i+1],7))[0:-1] # 7 or 10
-                
+                lvl = np.append(lvl,np.linspace(bins[i],bins[i+1],7))[0:-1] # 7 or 10 
             else:
-                
-                lvl=np.append(lvl,np.linspace(bins[i],bins[i+1],20))[0:-1] # 20 or 40
-        
-        
+                lvl = np.append(lvl,np.linspace(bins[i],bins[i+1],20))[0:-1] # 20 or 40
+
         bounds = np.round(lvl,3)
         
         # diverging colormap
