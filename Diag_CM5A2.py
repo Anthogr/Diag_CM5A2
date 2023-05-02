@@ -826,8 +826,8 @@ for ind_file in np.arange(0,length_loop):
                 bounds = np.linspace(-lim_precipevap,lim_precipevap,100)
                 norm_precipevap = mpl.colors.BoundaryNorm(bounds, cmap_precipevap.N)
             elif manual_lim_precipevap == 'y' :
-                if (max_lim_precipevap - min_lim_precipevap)/step_precipevaptep > 256:
-                    step_precipevaptep = np.ceil((max_lim_precipevap - min_lim_precipevap) / 256)
+                if (max_lim_precipevap - min_lim_precipevap)/step_precipevap > 256:
+                    step_precipevap = np.ceil((max_lim_precipevap - min_lim_precipevap) / 256)
                 cmap_precipevap = mpl.cm.get_cmap(cmapColor_precipevap)
                 bounds          = np.arange(min_lim_precipevap, max_lim_precipevap, step_precipevap)
                 norm_precipevap = mpl.colors.BoundaryNorm(bounds, cmap_precipevap.N)
